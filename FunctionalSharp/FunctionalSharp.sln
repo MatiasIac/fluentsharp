@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalSharp", "FunctionalSharp.csproj", "{7E99AB46-EB24-46B8-B379-62DE9BBC6B66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalSharpTests", "..\FunctionalSharpTests\FunctionalSharpTests.csproj", "{757CD7CF-A319-4E37-A528-88350A9C5989}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7E99AB46-EB24-46B8-B379-62DE9BBC6B66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E99AB46-EB24-46B8-B379-62DE9BBC6B66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E99AB46-EB24-46B8-B379-62DE9BBC6B66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E99AB46-EB24-46B8-B379-62DE9BBC6B66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{757CD7CF-A319-4E37-A528-88350A9C5989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{757CD7CF-A319-4E37-A528-88350A9C5989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{757CD7CF-A319-4E37-A528-88350A9C5989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{757CD7CF-A319-4E37-A528-88350A9C5989}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {011100C3-4EA9-43B6-9A1C-112533B1BEC5}
+	EndGlobalSection
+EndGlobal
