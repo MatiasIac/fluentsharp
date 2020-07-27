@@ -1,17 +1,17 @@
-﻿using System;
+﻿using FunctionalSharp.Operations;
 
 namespace FunctionalSharp.Validators
 {
     public static class Booleans
     {
-        public static void ThrowExceptionIfTrue(this bool expression)
+        public static OperationsBase IfTrue(this bool expression)
         {
-            expression.ThrowExceptionIfTrue(new Exception());
+            return OperationsFactory.GetOperations(expression);
         }
 
-        public static void ThrowExceptionIfTrue(this bool expression, Exception exception)
+        public static OperationsBase IfFalse(this bool expression)
         {
-            if (expression) throw exception;
+            return OperationsFactory.GetOperations(!expression);
         }
     }
 }
