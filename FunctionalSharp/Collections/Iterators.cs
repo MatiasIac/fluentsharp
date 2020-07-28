@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FunctionalSharp.Validators;
+using System;
 using System.Collections.Generic;
 
 namespace FunctionalSharp.Collections
@@ -19,7 +20,7 @@ namespace FunctionalSharp.Collections
             return collection;
         }
 
-        public static void ForEachItem<T>(this IEnumerable<T> collection, Action<T> action)
+        public static void ForEvery<T>(this IEnumerable<T> collection, Action<T> action)
         {
             foreach (var item in collection)
             {
@@ -35,19 +36,25 @@ namespace FunctionalSharp.Collections
         /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, int index, bool output&gt;</param>
         /// <param name="action"></param>
         /// <returns>The index when the iteration stopped. -1 when iteration did not started.</returns>
-        public static int IterateUntil<T>(this IEnumerable<T> collection, Func<T, int, bool> condition, Action<T> action)
+        public static void For<T>(this IEnumerable<T> collection, Func<T, int, bool> condition, Action<T> action)
         {
             var index = -1;
 
             foreach (var item in collection)
             {
-                if (!condition(item, index)) break;
                 index++;
-                action(item);
+                if (!condition(item, index)) break;
+                action?.Invoke(item);
             }
-
-            return index;
         }
 
+        public static void For<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> action)
+        {
+            foreach (var item in collection)
+            {
+                if (!condition(item)) break;
+                action?.Invoke(item);
+            }
+        }
     }
 }

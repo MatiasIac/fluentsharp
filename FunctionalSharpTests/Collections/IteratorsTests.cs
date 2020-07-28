@@ -19,34 +19,51 @@ namespace FunctionalSharp.Collections.Tests
         }
 
         [TestMethod()]
-        public void When_WithCollection_ProcessIntCollection_Expect_SumValues()
+        public void When_Then_ProcessIntCollection_Expect_SumValues()
         {
             var sum = 0;
-            var set = intCollection.Where(i => i <= 23).Then(collection => sum = collection.Sum(i => i));
+            var set = intCollection
+                .Where(i => i <= 23)
+                .Then(collection => sum = collection.Sum(i => i));
 
             Assert.AreEqual(42, sum);
         }
 
         [TestMethod()]
-        public void When_ForEachItem_SumIntCollection_Expect_Values()
+        public void When_ForEvery_SumIntCollection_Expect_Values()
         {
             var sum = 0;
-            intCollection.ForEachItem(i => sum += i);
+            intCollection
+                .ForEvery(i => sum += i);
 
             Assert.AreEqual(intCollection.Sum(i => i), sum);
         }
 
         [TestMethod()]
-        public void When_IterateUntil_CannotContinue_Expect_Index()
+        public void When_For_CannotContinue_Expect_Sum()
         {
             var sum = 0;
             
-            var index = intCollection.IterateUntil(
-                (item, i) => item < 22, 
+            intCollection.For(
+                item => item < 22, 
                 item => sum += item
             );
 
-            Assert.AreEqual(1, index);
+            Assert.AreEqual(41, sum);
+        }
+
+        [TestMethod()]
+        public void When_For_CannotContinue_Expect_LastIndex()
+        {
+            var index = -1;
+            var sum = 0;
+
+            intCollection.For(
+                (item, i) => { index = i; return item < 22; },
+                item => sum += item
+            );
+
+            Assert.AreEqual(2, index);
             Assert.AreEqual(41, sum);
         }
     }
