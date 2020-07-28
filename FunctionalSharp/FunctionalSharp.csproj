@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Matías Iacono</Authors>
+    <Product>Fluent Sharp</Product>
+    <Copyright></Copyright>
+    <RepositoryUrl>https://github.com/MatiasIac/netdevtools</RepositoryUrl>
+    <Description>Contains a set of extension methods and functions to extend collections and condition handling.
+
+Gives the possibility of create fluent coding for basic actions.</Description>
+    <PackageId>FluentSharp</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
