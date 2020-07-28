@@ -4,7 +4,7 @@ namespace FunctionalSharp.Validators
 {
     public static class Objects
     {
-        public static OperationsBase IfNull(this object obj)
+        public static Operations.Operations IfNull(this object obj)
         {
             return OperationsFactory.GetOperations(obj == null);
         }

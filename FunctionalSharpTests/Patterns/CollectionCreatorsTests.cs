@@ -13,7 +13,7 @@ namespace FunctionalSharp.Patterns.Tests
         [TestMethod()]
         public void RangeTest()
         {
-            Creator<int>.Range(10);
+            Assert.Inconclusive();
         }
     }
 }

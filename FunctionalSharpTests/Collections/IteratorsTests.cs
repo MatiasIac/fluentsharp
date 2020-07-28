@@ -22,7 +22,7 @@ namespace FunctionalSharp.Collections.Tests
         public void When_WithCollection_ProcessIntCollection_Expect_SumValues()
         {
             var sum = 0;
-            var set = intCollection.Where(i => i <= 23).WithCollection(collection => sum = collection.Sum(i => i));
+            var set = intCollection.Where(i => i <= 23).Then(collection => sum = collection.Sum(i => i));
 
             Assert.AreEqual(42, sum);
         }

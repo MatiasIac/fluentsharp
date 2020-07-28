@@ -4,14 +4,14 @@ using System.Text;
 
 namespace FunctionalSharp.Operations
 {
-    internal sealed class ImplementedOperation : OperationsBase
+    internal sealed class ImplementedOperation : Operations
     {
         public override void Throw(Exception ex)
         {
             base.Throw(ex);
         }
 
-        public override OperationsBase Then(Action predicate)
+        public override Operations Then(Action predicate)
         {
             return base.Then(predicate);
         }

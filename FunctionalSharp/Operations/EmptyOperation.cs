@@ -2,12 +2,12 @@
 
 namespace FunctionalSharp.Operations
 {
-    public sealed class EmptyOperation : OperationsBase
+    public sealed class EmptyOperation : Operations
     {
         public override void Throw(Exception ex)
         { }
 
-        public override OperationsBase Then(Action predicate)
+        public override Operations Then(Action predicate)
         {
             return this;
         }

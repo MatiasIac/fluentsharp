@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace FunctionalSharp.Patterns
 {
@@ -11,7 +10,7 @@ namespace FunctionalSharp.Patterns
         {
             public static ICollection<T> Range(T start, T end = default(T))
             {
-                return null;
+                throw new NotImplementedException();
             }
         }
     }

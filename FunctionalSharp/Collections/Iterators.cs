@@ -13,7 +13,7 @@ namespace FunctionalSharp.Collections
         /// <param name="collection"></param>
         /// <param name="action"></param>
         /// <returns>The input IEnumerable&lt;<typeparamref name="T"/>&gt; collection used in the operation</returns>
-        public static IEnumerable<T> WithCollection<T>(this IEnumerable<T> collection, Action<IEnumerable<T>> action)
+        public static IEnumerable<T> Then<T>(this IEnumerable<T> collection, Action<IEnumerable<T>> action)
         {
             action(collection);
             return collection;
