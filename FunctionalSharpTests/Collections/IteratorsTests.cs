@@ -1,8 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FunctionalSharp.Collections;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 
 namespace FunctionalSharp.Collections.Tests
@@ -65,6 +62,16 @@ namespace FunctionalSharp.Collections.Tests
 
             Assert.AreEqual(2, index);
             Assert.AreEqual(41, sum);
+        }
+
+        [TestMethod()]
+        public void When_For_IteratesAndReturnsFalse_Expect_StopIteration()
+        {
+            var index = -1;
+
+            intCollection.For(item => ++index < 3 && item != 77);
+
+            Assert.AreEqual(3, index);
         }
     }
 }

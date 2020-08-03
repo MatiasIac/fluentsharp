@@ -39,7 +39,7 @@ namespace FunctionalSharp.Collections
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, int index, bool output&gt;</param>
-        /// <param name="action"></param>
+        /// <param name="action">Action to be executed for each collection item</param>
         public static void For<T>(this IEnumerable<T> collection, Func<T, int, bool> condition, Action<T> action)
         {
             var index = -1;
@@ -58,13 +58,27 @@ namespace FunctionalSharp.Collections
         /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, bool output&gt;</param>
-        /// <param name="action"></param>
+        /// <param name="action">Action to be executed for each collection item</param>
         public static void For<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> action)
         {
             foreach (var item in collection)
             {
                 if (!condition(item)) break;
                 action?.Invoke(item);
+            }
+        }
+
+        /// <summary>
+        /// Iterate across the collection and stops when the action returns false
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection">Iterable collection</param>
+        /// <param name="action">Action to be executed for each collection item</param>
+        public static void For<T>(this IEnumerable<T> collection, Func<T, bool> action)
+        {
+            foreach (var item in collection)
+            {
+                if (!action(item)) return;
             }
         }
     }
