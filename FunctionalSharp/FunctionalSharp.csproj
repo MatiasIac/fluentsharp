@@ -7,11 +7,14 @@
     <Product>Fluent Sharp</Product>
     <Copyright></Copyright>
     <RepositoryUrl>https://github.com/MatiasIac/netdevtools</RepositoryUrl>
-    <Description>Contains a set of extension methods and functions to extend collections and condition handling.
+    <Description>FluentSharp for .Net Standard 2.0
 
-Gives the possibility of create fluent coding for basic actions.</Description>
+FluentSharp is a simple set of extension methods that will helps you creating code in a fluent style way. Minimizing the amount of code lines written for common behaviors.
+
+FluentSharp has the intention of remain small, not trying to solve every possible need or re invent already existing functionality and extensions. It will keep it simple!</Description>
     <PackageId>FluentSharp</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
