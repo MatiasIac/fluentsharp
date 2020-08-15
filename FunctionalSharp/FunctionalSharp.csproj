@@ -5,7 +5,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Matías Iacono</Authors>
     <Product>Fluent Sharp</Product>
-    <Copyright></Copyright>
+    <Copyright>Matías Iacono</Copyright>
     <RepositoryUrl>https://github.com/MatiasIac/netdevtools</RepositoryUrl>
     <Description>FluentSharp for .Net Standard 2.0
 
@@ -14,7 +14,9 @@ FluentSharp is a simple set of extension methods that will helps you creating co
 FluentSharp has the intention of remain small, not trying to solve every possible need or re invent already existing functionality and extensions. It will keep it simple!</Description>
     <PackageId>FluentSharp</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
+    <PackageProjectUrl>https://github.com/MatiasIac/netdevtools</PackageProjectUrl>
+    <RepositoryType>Git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
