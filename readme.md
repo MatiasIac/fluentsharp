@@ -25,6 +25,9 @@ FluentSharp has the intention of remain small, not trying to solve every possibl
     * [```Intersect()```](#intersect-function)
     * [```Except()```](#except-function)
     * [Other extensions](#other-linq-extensions)
+* [DataReader Extensions](#datareader-extensions)
+    * [```ToList()```](#tolist-function)
+    * [```ToMany()```](#tomany-function)
 
 
 ## Using and imports
@@ -330,3 +333,54 @@ Following a similar implementation, other LinQ extensions that requires ```IEqua
 * ```ToDictionary()```
 * ```ToLookup()```
 * ```Union()```
+
+## DataReader extensions
+
+It is common when reading data from a database using a DataReader object, to iterate through the records with the intention of produce a collection of an internal known type. Translating a non-objectified type of data into one that our code can understand.
+
+### ToList Function
+
+The ```ToList<T>()``` extension uses the content of a single resulting query processed by an active DataReader, and convert the resulting rows into a list of expected type ```T``` based on the entity property type names and selected field names, and matching the query field types with the .Net property entity types.
+
+Having the following set of data:
+
+```text
+Id    Name    Age
+10    John    23
+20    Peter   43
+30    Claire  19
+40    Julia   56
+```
+
+And the following SQL query:
+
+```sql
+SELECT Id, Name, Age FROM Users
+```
+
+With a type in our code:
+
+```cs
+class User
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+}
+```
+
+Can be converted to a ```List<User>()``` from the handling DataReader:
+
+```cs
+var listOfUsers = datareader.ToList<User>();
+```
+
+### ToMany Function
+
+As ```ToList<T>()``` function, ```ToMany<...>()``` allows to read and translate a DataReader that has many query results. Each type used with ```ToMany<...>()``` function is handled as ordinal relevance. The returning type is a tuple with many values as types.
+
+```cs
+var (listOfUsers, listOfCompanies) = datareader.ToMany<User, Company>();
+```
+
+```ToMany<...>()``` provides up to 4 possible types, allowing to handle 4 possible query results from the DataReader. ```ToMany<T1, T2>()```, ```ToMany<T1, T2, T3>()```, ```ToMany<T1, T2, T3, T4>()```.
