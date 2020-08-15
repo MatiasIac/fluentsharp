@@ -52,6 +52,12 @@ using FunctionalSharp.Collections;
 using FunctionalSharp.Linq;
 ```
 
+#### For DataReader extensions
+
+```cs
+using FunctionalSharp.Data;
+```
+
 ## Conditionals
 
 It is common in coding to use conditions to derive the code execution. Most of these implementations are usually to validate input function parameters or executing one line after the condition is evaluated.
