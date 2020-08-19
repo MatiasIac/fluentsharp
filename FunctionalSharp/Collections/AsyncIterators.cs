@@ -14,9 +14,14 @@ namespace FunctionalSharp.Collections
         /// <param name="collection"></param>
         /// <param name="action"></param>
         /// <returns>The input IEnumerable&lt;<typeparamref name="T"/>&gt; collection used in the operation</returns>
-        public static async Task<IEnumerable<T>> ThenAsync<T>(this IEnumerable<T> collection, Action<IEnumerable<T>> action)
+        public static async Task<IEnumerable<T>> ThenAsync<T>(
+            this IEnumerable<T> collection, 
+            Action<IEnumerable<T>> action) => await Task.Run(() => collection.Then(action));
+
+
+        public static async Task<IEnumerable<T>> AlterAsync<T>(this IEnumerable<T> collection, Func<IEnumerable<T>, IEnumerable<T>> action)
         {
-            return await Task.Run(() => collection.Then(action));
+            return await Task.Run(() => collection.Alter(action));
         }
 
         /// <summary>

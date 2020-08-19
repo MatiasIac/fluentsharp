@@ -22,6 +22,16 @@ namespace FunctionalSharp.Collections
         }
 
         /// <summary>
+        /// Allows to manipulate the incoming collection and returns a modified new one
+        /// </summary>
+        /// <typeparam name="T">Any</typeparam>
+        /// <param name="collection"></param>
+        /// <param name="action"></param>
+        /// <returns>Returns a new IEnumerable&lt;<typeparamref name="T"/>&gt; collection produced by the operation</returns>
+        public static IEnumerable<T> Alter<T>(this IEnumerable<T> collection,
+            Func<IEnumerable<T>, IEnumerable<T>> action) => action(collection);
+
+        /// <summary>
         /// Iterates across the collection passing the current item to the defined action
         /// </summary>
         /// <typeparam name="T">A type supported by the iterable collection</typeparam>

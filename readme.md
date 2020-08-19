@@ -21,6 +21,9 @@ FluentSharp has the intention of remain small, not trying to solve every possibl
 * [Operations](#operations)
     * [```Then()```](#then-function)
     * [```ThenAsync()```](#thenasync-function)
+* [Collection Alteration](#collection-alteration)
+    * [```Alter()```](#alter-function)
+    * [```AlterAsync()```](#alterasync-function)
 * [Linq Extensions](#linq-extensions)
     * [```Intersect()```](#intersect-function)
     * [```Except()```](#except-function)
@@ -280,23 +283,41 @@ Because ```Then``` function is extending collections, it can be used together wi
 collection.Where(c => c < 55).Then(c => DoSomething(c));
 ```
 
-```Then``` function returns the input collection. Any modification done to the collection will affect the final output.
+```Then``` function returns the input collection.
 
-```cs
-var totalElements = collection
-    .Where(c => c < 55)
-    .Then(c => RemoveOneElement(c))
-    .Then(c => AddTwoElements(c))
-    .Count();
-
-//totalElements will be 4
-```
 ### ThenAsync function
 
 ```ThenAsync``` allows to perform the same operation than ```Then``` function but in an asynchonous context.
 
 ```cs
 await collection.ThenAsync(c => ...);
+```
+
+## Collection Alteration
+
+Handling collections with the existent extensions creates a new collection after it manipulation. The ```Then()``` function creates a context in which the current collection is passed into context but cannot be modified, or produce a new collection object after it manipulation. ```Alter()``` function, in the other hand, allows to produce a new collection from the executed context.
+
+### Alter function
+
+Having a collection, passes the collection into the expression context and returns a new collection based on the context result.
+
+```cs
+var collection = new List<int>() { 1, 2, 3, 4, 5 };
+
+collection.Alter(c =>
+{
+    var list = c.ToList();
+    list.Remove(1);
+    return list;
+}).Count();
+```
+
+### AlterAsync function
+
+```AlterAsync``` allows to perform the same operation than ```Alter``` function but in an asynchonous context.
+
+```cs
+await collection.AlterAsync(c => ...);
 ```
 
 ## Linq Extensions

@@ -73,5 +73,20 @@ namespace FunctionalSharp.Collections.Tests
 
             Assert.AreEqual(3, index);
         }
+
+        [TestMethod()]
+        public void When_Alter_ReturnsNewCollection_Expect_Modifications()
+        {
+            var collection = intCollection
+                .Where(i => i < 23)
+                .Alter(col => AddNumber(col.ToList()));
+
+            Assert.AreEqual(4, collection.Count());
+
+            static IEnumerable<int> AddNumber(List<int> collection) {
+                collection.Add(10);
+                return collection;
+            }
+        }
     }
 }

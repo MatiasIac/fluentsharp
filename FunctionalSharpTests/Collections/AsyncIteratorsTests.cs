@@ -69,5 +69,17 @@ namespace FunctionalSharp.Collections.Tests
 
             Assert.AreEqual(6, sum);
         }
+
+        [TestMethod()]
+        public async Task When_Alter_ReturnsNewCollection_Expect_Modifications()
+        {
+            var newCollection = await _collection.AlterAsync(col => {
+                var c = col.ToList();
+                c.Add(10);
+                return c;
+            });
+
+            Assert.AreEqual(8, newCollection.Count());
+        }
     }
 }
