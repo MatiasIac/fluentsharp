@@ -7,9 +7,6 @@ namespace FunctionalSharp.Operations
         public override void Throw(Exception ex)
         { }
 
-        public override Operations Then(Action predicate)
-        {
-            return this;
-        }
+        public override Operations Then(Action predicate) => this;
     }
 }

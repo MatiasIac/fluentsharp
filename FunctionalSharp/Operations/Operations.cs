@@ -8,10 +8,7 @@ namespace FunctionalSharp.Operations
         /// Throws an exception
         /// </summary>
         /// <param name="ex">Exception to be thrown</param>
-        public virtual void Throw(Exception ex)
-        {
-            throw ex;
-        }
+        public virtual void Throw(Exception ex) => throw ex;
 
         /// <summary>
         /// Execute the defined predicate and enables

@@ -6,6 +6,7 @@ namespace FunctionalSharp.Linq
 {
     public static class LinqExtenders
     {
+
         public static IEnumerable<T> Intersect<T>(this IEnumerable<T> source, IEnumerable<T> second, Func<T, T, bool> comparer)
             => source.Intersect(second, new EqualityComparerDelegateWrapper<T>(comparer));
         
