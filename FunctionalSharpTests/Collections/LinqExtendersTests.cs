@@ -14,8 +14,6 @@ namespace FunctionalSharp.Linq.Tests
         {
             public int Id { get; set; }
             public string Name { get; set; }
-
-            public override int GetHashCode() => Id.GetHashCode();
         }
 
         private IEnumerable<int> A;
@@ -109,7 +107,11 @@ namespace FunctionalSharp.Linq.Tests
         [TestMethod()]
         public void When_Distinct_Process_ObjectListById_Return_UniqueValues()
         {
-            var result = repeatedUsersList.Distinct((a, b) => a.Id == b.Id);
+            var result = repeatedUsersList
+                .Distinct(
+                    (a, b) => a.Id == b.Id, 
+                    a => a.Id.GetHashCode());
+
             Assert.AreEqual(3, result.Count());
         }
     }

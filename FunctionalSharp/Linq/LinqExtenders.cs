@@ -19,6 +19,11 @@ namespace FunctionalSharp.Linq
         public static IEnumerable<T> Distinct<T>(this IEnumerable<T> source, Func<T, T, bool> comparer)
             => source.Distinct(new EqualityComparerDelegateWrapper<T>(comparer));
 
+        public static IEnumerable<T> Distinct<T>(this IEnumerable<T> source, 
+            Func<T, T, bool> comparer, 
+            Func<T, int> hashCodeComparer) where T : new()
+            => source.Distinct(new EqualityComparerDelegateWrapper<T>(comparer, hashCodeComparer));
+
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(
             this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
