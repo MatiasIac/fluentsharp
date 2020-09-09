@@ -16,13 +16,11 @@ namespace FunctionalSharp.Collections
         /// <returns>The input IEnumerable&lt;<typeparamref name="T"/>&gt; collection used in the operation</returns>
         public static async Task<IEnumerable<T>> ThenAsync<T>(
             this IEnumerable<T> collection, 
-            Action<IEnumerable<T>> action) => await Task.Run(() => collection.Then(action));
+            Action<IEnumerable<T>> action) => await Task.FromResult(collection.Then(action));
 
 
         public static async Task<IEnumerable<T>> AlterAsync<T>(this IEnumerable<T> collection, Func<IEnumerable<T>, IEnumerable<T>> action)
-        {
-            return await Task.Run(() => collection.Alter(action));
-        }
+            => await Task.FromResult(collection.Alter(action));
 
         /// <summary>
         /// Iterates across the collection passing the current item to the defined action
@@ -31,9 +29,7 @@ namespace FunctionalSharp.Collections
         /// <param name="collection">Iterable collection</param>
         /// <param name="action">Action to be executed for each collection item</param>
         public static async Task ForEveryAsync<T>(this IEnumerable<T> collection, Action<T> action)
-        {
-            await Task.Run(() => collection.ForEvery(action));
-        }
+            => await Task.Run(() => collection.ForEvery(action));
 
         /// <summary>
         /// Iterate the IEnumerable&lt;<typeparamref name="T"/>&gt; collection and applies the expected condition
@@ -43,9 +39,7 @@ namespace FunctionalSharp.Collections
         /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, int index, bool output&gt;</param>
         /// <param name="action">Action to be executed for each collection item</param>
         public static async Task ForAsync<T>(this IEnumerable<T> collection, Func<T, int, bool> condition, Action<T> action)
-        {
-            await Task.Run(() => collection.For(condition, action));
-        }
+            => await Task.Run(() => collection.For(condition, action));
 
         /// <summary>
         /// Iterate across the collection applying the defined condition without passing the current collection index
@@ -55,9 +49,7 @@ namespace FunctionalSharp.Collections
         /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, bool output&gt;</param>
         /// <param name="action">Action to be executed for each collection item</param>
         public static async Task ForAsync<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> action)
-        {
-            await Task.Run(() => collection.For(condition, action));
-        }
+            => await Task.Run(() => collection.For(condition, action));
 
         /// <summary>
         /// Iterate across the collection and stops when the action returns false
@@ -66,8 +58,6 @@ namespace FunctionalSharp.Collections
         /// <param name="collection">Iterable collection</param>
         /// <param name="action">Action to be executed for each collection item</param>
         public static async Task ForAsync<T>(this IEnumerable<T> collection, Func<T, bool> action)
-        {
-            await Task.Run(() => collection.For(action));
-        }
+            => await Task.Run(() => collection.For(action));
     }
 }

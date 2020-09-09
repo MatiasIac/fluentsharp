@@ -11,8 +11,6 @@ namespace FunctionalSharp.Validators
         /// <param name="obj">Nullable object</param>
         /// <returns>Set of valid operations</returns>
         public static Operations.Operations IfNull(this object obj)
-        {
-            return OperationsFactory.GetOperations(obj == null);
-        }
+            => OperationsFactory.GetOperations(obj == null);
     }
 }

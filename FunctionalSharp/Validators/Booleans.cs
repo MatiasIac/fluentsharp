@@ -11,9 +11,7 @@ namespace FunctionalSharp.Validators
         /// <param name="expression">Boolean expression</param>
         /// <returns>Set of valid operations</returns>
         public static Operations.Operations IfTrue(this bool expression)
-        {
-            return OperationsFactory.GetOperations(expression);
-        }
+            => OperationsFactory.GetOperations(expression);
 
         /// <summary>
         /// Enables following execution expressions if the 
@@ -22,8 +20,6 @@ namespace FunctionalSharp.Validators
         /// <param name="expression">Boolean expression</param>
         /// <returns>Set of valid operations</returns>
         public static Operations.Operations IfFalse(this bool expression)
-        {
-            return OperationsFactory.GetOperations(!expression);
-        }
+            => OperationsFactory.GetOperations(!expression);
     }
 }
