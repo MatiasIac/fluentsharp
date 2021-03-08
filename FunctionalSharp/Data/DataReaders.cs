@@ -6,6 +6,13 @@ namespace FunctionalSharp.Data
 {
     public static class DataReaders
     {
+        /// <summary>
+        /// Having a DbDataReader object, create an instance of <typeparamref name="T"/> for each given row
+        /// mapping column names with public properties in <typeparamref name="T"/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <returns>A list of <typeparamref name="T"/></returns>
         public static List<T> ToList<T>(this DbDataReader reader) where T : new() => Read<T>(reader);
 
         public static (List<T1> Value1, List<T2> Value2) ToMany<T1, T2>(this DbDataReader reader)

@@ -17,4 +17,8 @@
     <ProjectReference Include="..\FunctionalSharp\FunctionalSharp.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Patterns\" />
+  </ItemGroup>
+
 </Project>
