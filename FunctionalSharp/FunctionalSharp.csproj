@@ -24,7 +24,6 @@ FluentSharp has the intention of remain small, not trying to solve every possibl
   <ItemGroup>
     <Folder Include="Decorators\" />
     <Folder Include="Functions\" />
-    <Folder Include="Patterns\" />
   </ItemGroup>
 
 </Project>
