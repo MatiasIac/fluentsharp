@@ -24,31 +24,50 @@ namespace FunctionalSharp.Patterns
             public override void OnExecute(DataCargo data) => _action.Invoke(data);
         }
 
-        public struct DataCargo
+        public sealed class Configuration
         {
-            public T Payload;
+            public bool StopOnFailure { get; }
+            public int RepeatTimesOnFailure { get; }
+
+            public Configuration(
+                bool stopOnFailure = true, 
+                int repeatTimesOnFailure = 0
+            )
+            {
+                StopOnFailure = stopOnFailure;
+                RepeatTimesOnFailure = repeatTimesOnFailure;
+            }
         }
 
-        private DataCargo _dataCargo;
-        private readonly bool _stopOnFailure = false;
-        private readonly List<LinkBase> _chain;
-        private Action<DataCargo> _completeAction;
-        private Action<DataCargo, Exception> _errorAction;
+        public class DataCargo
+        {
+            public T Payload;
+            public bool Cancel { get; set; }
+        }
 
-        internal Chain(T payload, bool stopOnFailure)
+        private readonly DataCargo _dataCargo;
+        private readonly Configuration _configuration;
+        private readonly List<LinkBase> _chain;
+        private Action<T> _completeAction;
+        private Action<T, Exception> _errorAction;
+
+        internal Chain(T payload, Configuration configuration)
         {
             _dataCargo = new DataCargo
             {
                 Payload = payload ?? Activator.CreateInstance<T>()
             };
 
-            _stopOnFailure = stopOnFailure;
+            _configuration = configuration ?? new Configuration();
+
             _chain = new List<LinkBase>();
         }
 
-        public static Chain<T> Create(bool stopOnFailure = false) => new Chain<T>(null, stopOnFailure);
+        public static Chain<T> Create() => new Chain<T>(null, null);
 
-        public static Chain<T> Create(T payload, bool stopOnFailure = false) => new Chain<T>(payload, stopOnFailure);
+        public static Chain<T> Create(Configuration configuration) => new Chain<T>(null, configuration);
+
+        public static Chain<T> Create(T payload, Configuration configuration = null) => new Chain<T>(payload, configuration);
 
         public Chain<T> AddLink(Action<DataCargo> action) => AddLink(new Link(action));
 
@@ -67,26 +86,30 @@ namespace FunctionalSharp.Patterns
             {
                 try
                 {
+                    _dataCargo.Cancel = false;
+
                     link.OnExecute(_dataCargo);
+
+                    if (_dataCargo.Cancel) break;
                 }
                 catch (Exception ex)
                 {
-                    _errorAction?.Invoke(_dataCargo, ex);
+                    _errorAction?.Invoke(_dataCargo.Payload, ex);
 
-                    if (_stopOnFailure) break;
+                    if (_configuration.StopOnFailure) break;
                 }
             }
 
-            _completeAction?.Invoke(_dataCargo);
+            _completeAction?.Invoke(_dataCargo.Payload);
         }
 
-        public Chain<T> OnComplete(Action<DataCargo> action)
+        public Chain<T> OnComplete(Action<T> action)
         {
             _completeAction = action;
             return this;
         }
 
-        public Chain<T> OnError(Action<DataCargo, Exception> action)
+        public Chain<T> OnError(Action<T, Exception> action)
         {
             _errorAction = action;
             return this;

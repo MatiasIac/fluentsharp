@@ -19,7 +19,7 @@ namespace FunctionalSharp.Patterns.Tests
                 .AddLink(data => data.Payload.Sum = 0)
                 .AddLink(data => data.Payload.Sum += 10)
                 .AddLink(data => data.Payload.Sum += 20)
-                .OnComplete(data => Assert.AreEqual(30, data.Payload.Sum))
+                .OnComplete(data => Assert.AreEqual(30, data.Sum))
                 .Run();
         }
 
@@ -37,7 +37,7 @@ namespace FunctionalSharp.Patterns.Tests
                 .AddLink(data => data.Payload.Sum += 10)
                 .AddLink(data => data.Payload.Sum += 10)
                 .AddLink(data => data.Payload.Sum += 20)
-                .OnComplete(data => Assert.AreEqual(60, data.Payload.Sum))
+                .OnComplete(data => Assert.AreEqual(60, data.Sum))
                 .Run();
 
             Assert.AreEqual(60, myLocalPayload.Sum);
