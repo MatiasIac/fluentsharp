@@ -1,8 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FunctionalSharp.Validators;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FunctionalSharp.Validators;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FunctionalSharp.Operations.Tests
 {
@@ -19,18 +16,7 @@ namespace FunctionalSharp.Operations.Tests
                 .Then(() => result = "test passed");
             
             Assert.AreEqual("test passed", result);
-
-
-            var chain = FunctionalSharp.Patterns.Chain<MyData>.Create(true);
-            chain.AddLink("FirstLink", (cargo) =>
-            {
-                
-            });
         }
     }
 
-    public class MyData
-    {
-
-    }
 }
