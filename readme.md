@@ -31,7 +31,8 @@ FluentSharp has the intention of remain small, not trying to solve every possibl
 * [DataReader Extensions](#datareader-extensions)
     * [```ToList()```](#tolist-function)
     * [```ToMany()```](#tomany-function)
-
+* [Pattern Implementations](#pattern-implementations)
+    * [```GenericChain<T>()```](#generic-chain)
 
 ## Using and imports
 
@@ -411,3 +412,53 @@ var (listOfUsers, listOfCompanies) = datareader.ToMany<User, Company>();
 ```
 
 ```ToMany<...>()``` provides up to 4 possible types, allowing to handle 4 possible query results from the DataReader. ```ToMany<T1, T2>()```, ```ToMany<T1, T2, T3>()```, ```ToMany<T1, T2, T3, T4>()```.
+
+## Pattern Implementations
+
+In order of speed up implementations, several design patterns are encapsulated usuing a pseudo functional approach.
+
+### Generic Chain
+
+```GenericChain<T>()``` encapsulates **chain of responsability** design pattern. It will execute a defined order of actions, in a sequential order, passing a user defined payload across the actions.
+
+```cs
+var chain = GenericChain<string>.Create(string.Empty);
+```
+
+if you need to use a custom type, the type must has an accessible contructor with zero parameters.
+
+```cs
+class MyCustomType { ... }
+
+var chain = GenericChain<MyCustomType>.Create();
+```
+
+As any value-type, it is possible to inject a pre instantiated custom type and used as payload across the action calls.
+
+```cs
+var chain = GenericChain<MyCustomType>.Create(new MyCustomType());
+```
+
+Once the chain is created new links for the chain can be added.
+
+```cs
+chain
+    .AddLink(event => Console.WriteLine("My action"))
+    .AddLink(event => Console.WriteLine("My another action"));
+```
+
+An action can also be defined through a custom type derived from ```LinkBase``` class.
+
+```cs
+public class MyOwnAction : GenericChain<int>.LinkBase
+{
+    public override void OnExecute(GenericChain<int>.DataCargo data)
+    {
+        ...
+    }
+}
+```
+
+#### Configuring the chain
+
+When a Generic Chain is instantiated it can be configured to behave differently when an exception is thrown.

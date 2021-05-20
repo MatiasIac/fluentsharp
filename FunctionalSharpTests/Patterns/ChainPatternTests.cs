@@ -13,6 +13,14 @@ namespace FunctionalSharp.Patterns.Tests
 
         private abstract class AbstractType { }
 
+        public class MyOwnAction : GenericChain<int>.LinkBase
+        {
+            public override void OnExecute(GenericChain<int>.DataCargo data)
+            {
+                data.Payload += 1;
+            }
+        }
+
         [TestMethod()]
         public void When_Chain_IsCreated_ExpectExecution()
         {
@@ -99,6 +107,19 @@ namespace FunctionalSharp.Patterns.Tests
                 .AddLink(data => data.Cancel = true)
                 .AddLink(data => data.Payload += 1)
                 .OnCompleted(data => Assert.AreEqual(11, data))
+                .Run();
+        }
+
+        [TestMethod()]
+        public void When_Chain_UsesCustomLinkType_ExpectResults()
+        {
+            var chain = GenericChain<int>.Create(0);
+
+            chain
+                .AddLink(new MyOwnAction())
+                .AddLink(new MyOwnAction())
+                .AddLink(new MyOwnAction())
+                .OnCompleted(data => Assert.AreEqual(3, data))
                 .Run();
         }
     }
