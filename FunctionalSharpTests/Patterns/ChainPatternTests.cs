@@ -13,9 +13,9 @@ namespace FunctionalSharp.Patterns.Tests
 
         private abstract class AbstractType { }
 
-        public class MyOwnAction : GenericChain<int>.LinkBase
+        public class MyOwnAction : LinkBase<int>
         {
-            public override void OnExecute(GenericChain<int>.DataCargo data)
+            public override void OnExecute(DataCargo<int> data)
             {
                 data.Payload += 1;
             }
@@ -78,8 +78,7 @@ namespace FunctionalSharp.Patterns.Tests
         public void When_Chain_FailAndRepeat_ExpectResults()
         {
             var chain = GenericChain<int>.Create(0, 
-                new GenericChain<int>
-                    .Configuration(
+                new Configuration(
                         stopOnFailure: false, 
                         repeatTimesOnFailure: 3
                     )
@@ -121,6 +120,41 @@ namespace FunctionalSharp.Patterns.Tests
                 .AddLink(new MyOwnAction())
                 .OnCompleted(data => Assert.AreEqual(3, data))
                 .Run();
+        }
+
+        [TestMethod()]
+        [ExpectedException(typeof(Exception))]
+        public void When_Chain_Fail_ExpectError()
+        {
+            var chain = GenericChain<int>.Create(0, new Configuration(stopOnFailure: true));
+
+            chain
+                .AddLink(data => data.Payload = 10)
+                .AddLink(data => {
+                    data.Payload += 1;
+                    throw new Exception("Chain exception");
+                })
+                .OnError((data, ex) => 
+                {
+                    Assert.AreEqual(11, data);
+                    Assert.AreEqual("Chain exception", ex.Message);
+                    throw ex;
+                })
+                .Run();
+        }
+
+        [TestMethod()]
+        public void When_Chain_FailAndStopOnFailureIsSet_OnCompleted_IsNotExecuted()
+        {
+            var chain = GenericChain<int>.Create(0, new Configuration(stopOnFailure: true));
+
+            chain
+                .AddLink(data => data.Payload = 10)
+                .AddLink(data => throw new Exception())
+                .OnCompleted(data => Assert.Fail())
+                .Run();
+
+            Assert.IsTrue(true);
         }
     }
 

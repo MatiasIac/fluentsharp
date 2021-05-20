@@ -5,62 +5,62 @@ using System.Collections.Generic;
 namespace FunctionalSharp.Patterns
 {
 
+    public abstract class LinkBase<T>
+    {
+        public abstract void OnExecute(DataCargo<T> data);
+    }
+
+    public sealed class DataCargo<T>
+    {
+        public T Payload;
+        public bool Cancel { get; set; }
+    }
+
+    public sealed class Configuration
+    {
+        public bool StopOnFailure { get; }
+        public int RepeatTimesOnFailure { get; }
+
+        public Configuration(
+            bool stopOnFailure = true,
+            int repeatTimesOnFailure = 0
+        )
+        {
+            StopOnFailure = stopOnFailure;
+            RepeatTimesOnFailure = repeatTimesOnFailure;
+        }
+    }
+
     public sealed class GenericChain<T>
     {
-        public abstract class LinkBase
+        private sealed class Link : LinkBase<T>
         {
-            public abstract void OnExecute(DataCargo data);
-        }
+            private readonly Action<DataCargo<T>> _action;
 
-        private sealed class Link : LinkBase
-        {
-            private readonly Action<DataCargo> _action;
-
-            public Link(Action<DataCargo> action)
+            public Link(Action<DataCargo<T>> action)
             {
                 _action = action;
             }
 
-            public override void OnExecute(DataCargo data) => _action.Invoke(data);
+            public override void OnExecute(DataCargo<T> data) => _action.Invoke(data);
         }
 
-        public sealed class Configuration
-        {
-            public bool StopOnFailure { get; }
-            public int RepeatTimesOnFailure { get; }
-
-            public Configuration(
-                bool stopOnFailure = true, 
-                int repeatTimesOnFailure = 0
-            )
-            {
-                StopOnFailure = stopOnFailure;
-                RepeatTimesOnFailure = repeatTimesOnFailure;
-            }
-        }
-
-        public class DataCargo
-        {
-            public T Payload;
-            public bool Cancel { get; set; }
-        }
-
-        private readonly DataCargo _dataCargo;
+        private readonly DataCargo<T> _dataCargo;
         private readonly Configuration _configuration;
-        private readonly List<LinkBase> _chain;
+        private readonly List<LinkBase<T>> _chain;
         private Action<T> _completeAction;
-        private Action<DataCargo, Exception> _errorAction;
+        private Action<T, Exception> _errorAction;
 
         internal GenericChain(T payload, Configuration configuration)
         {
-            _dataCargo = new DataCargo
+            _dataCargo = new DataCargo<T>
             {
                 Payload = GetPayloadOrInstance(payload)
             };
 
             _configuration = configuration ?? new Configuration();
 
-            _chain = new List<LinkBase>();
+            _chain = new List<LinkBase<T>>();
         }
 
         public static GenericChain<T> Create() => new GenericChain<T>(default, null);
@@ -69,9 +69,9 @@ namespace FunctionalSharp.Patterns
 
         public static GenericChain<T> Create(T payload, Configuration configuration = null) => new GenericChain<T>(payload, configuration);
 
-        public GenericChain<T> AddLink(Action<DataCargo> action) => AddLink(new Link(action));
+        public GenericChain<T> AddLink(Action<DataCargo<T>> action) => AddLink(new Link(action));
 
-        public GenericChain<T> AddLink(LinkBase link)
+        public GenericChain<T> AddLink(LinkBase<T> link)
         {
             link.IfNull().Throw(new Exception("Chain Link cannot be null"));
 
@@ -82,12 +82,14 @@ namespace FunctionalSharp.Patterns
 
         public void Run()
         {
+            bool failed = false;
+
             foreach (var link in _chain)
             {
-                if (RunLinkAndStop(link)) break;
+                if (failed = RunLinkAndStop(link)) break;
             }
 
-            _completeAction?.Invoke(_dataCargo.Payload);
+            if (!failed) _completeAction?.Invoke(_dataCargo.Payload);
         }
 
         /// <summary>
@@ -106,13 +108,13 @@ namespace FunctionalSharp.Patterns
         /// </summary>
         /// <param name="action"></param>
         /// <returns>This chain</returns>
-        public GenericChain<T> OnError(Action<DataCargo, Exception> action)
+        public GenericChain<T> OnError(Action<T, Exception> action)
         {
             _errorAction = action;
             return this;
         }
 
-        private bool RunLinkAndStop(LinkBase link, int attempt = 0)
+        private bool RunLinkAndStop(LinkBase<T> link, int attempt = 0)
         {
             try
             {
@@ -122,7 +124,7 @@ namespace FunctionalSharp.Patterns
             }
             catch (Exception ex)
             {
-                _errorAction?.Invoke(_dataCargo, ex);
+                _errorAction?.Invoke(_dataCargo.Payload, ex);
 
                 if (!_configuration.StopOnFailure && 
                     _configuration.RepeatTimesOnFailure > 0 &&

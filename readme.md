@@ -456,9 +456,9 @@ chain
 An action can also be defined through a custom type derived from ```LinkBase``` class.
 
 ```cs
-class MyOwnAction : GenericChain<MyCustomType>.LinkBase
+class MyOwnAction : LinkBase<MyCustomType>
 {
-    override void OnExecute(GenericChain<MyCustomType>.DataCargo data)
+    override void OnExecute(DataCargo<MyCustomType> data)
     {
         ...
     }
@@ -467,4 +467,34 @@ class MyOwnAction : GenericChain<MyCustomType>.LinkBase
 
 #### Configuring the chain
 
-When a Generic Chain is instantiated it can be configured to behave differently when an exception is thrown.
+Generic Chain can be configured on how to react when exceptions are thrown by each individual link.
+
+Use ```stopOnFailure``` property to decide if the chain should stop moving forward if the current link fails.
+
+Use ```repeatTimesOnFailure``` property to set how many attempts over a failing link should happened to consider it as failed.
+
+```cs
+var chain = GenericChain<int>.Create(0, 
+    new Configuration(
+        stopOnFailure: false, //do not stop on failure
+        repeatTimesOnFailure: 3 //retry 3 times on each link failure
+    )
+);
+```
+
+#### OnError and OnCompleted
+
+Use ```OnError<T, Exception>()``` to capture and handle exceptions thrown by a processing link.
+
+```cs
+.OnError((data, ex) => 
+{
+    ...
+})
+```
+
+```OnCompleted<T>()``` is called when the chain completed link processing. If an error happened and ```stopOnFailure``` was enabled, this method is not called.
+
+#### Executing the chain
+
+Once the links, error and success handlers were configured, use ```Run()``` method to start the chain.
