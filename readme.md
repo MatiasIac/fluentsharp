@@ -62,6 +62,12 @@ using FunctionalSharp.Linq;
 using FunctionalSharp.Data;
 ```
 
+#### For Design Pattern tools
+
+```cs
+using FunctionalSharp.Patterns;
+```
+
 ## Conditionals
 
 It is common in coding to use conditions to derive the code execution. Most of these implementations are usually to validate input function parameters or executing one line after the condition is evaluated.
@@ -450,9 +456,9 @@ chain
 An action can also be defined through a custom type derived from ```LinkBase``` class.
 
 ```cs
-public class MyOwnAction : GenericChain<int>.LinkBase
+class MyOwnAction : GenericChain<MyCustomType>.LinkBase
 {
-    public override void OnExecute(GenericChain<int>.DataCargo data)
+    override void OnExecute(GenericChain<MyCustomType>.DataCargo data)
     {
         ...
     }
