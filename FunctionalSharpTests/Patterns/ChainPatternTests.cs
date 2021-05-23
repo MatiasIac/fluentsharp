@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FunctionalSharp.Decorators;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace FunctionalSharp.Patterns.Tests
@@ -155,6 +156,35 @@ namespace FunctionalSharp.Patterns.Tests
                 .Run();
 
             Assert.IsTrue(true);
+        }
+
+        [Link("MyCustomLink")]
+        public class CustomLink : LinkBase<int>
+        {
+            public override void OnExecute(DataCargo<int> data)
+            {
+                data.Payload++;
+            }
+        }
+
+        [Link("MyStringCustomLink")]
+        public class StringCustomLink : LinkBase<string>
+        {
+            public override void OnExecute(DataCargo<string> data)
+            {
+                data.Payload += "injected value";
+            }
+        }
+
+        [TestMethod()]
+        public void When_Chain_AddLinkByAttribute_ExpectResults()
+        {
+            var chain = GenericChain<int>.Create(0, new Configuration(stopOnFailure: true));
+
+            chain
+                .AddDecoratedLink("MyCustomLink")
+                .OnCompleted(data => Assert.AreEqual(1, data))
+                .Run();
         }
     }
 

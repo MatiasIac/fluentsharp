@@ -1,6 +1,8 @@
-﻿using FunctionalSharp.Validators;
+﻿using FunctionalSharp.Decorators;
+using FunctionalSharp.Validators;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FunctionalSharp.Patterns
 {
@@ -50,6 +52,7 @@ namespace FunctionalSharp.Patterns
         private readonly List<LinkBase<T>> _chain;
         private Action<T> _completeAction;
         private Action<T, Exception> _errorAction;
+        private Dictionary<string, LinkBase<T>> _decoratedLinkDictionary;
 
         internal GenericChain(T payload, Configuration configuration)
         {
@@ -80,6 +83,9 @@ namespace FunctionalSharp.Patterns
             return this;
         }
 
+        public GenericChain<T> AddDecoratedLink(string linkName) => AddLink(GetLinkByDecorationName(linkName));
+
+        #region Events
         public void Run()
         {
             bool failed = false;
@@ -112,6 +118,38 @@ namespace FunctionalSharp.Patterns
         {
             _errorAction = action;
             return this;
+        }
+        #endregion
+
+        #region Privates
+        private LinkBase<T> GetLinkByDecorationName(string name)
+        {
+            _decoratedLinkDictionary.IfNull()
+                .Then(() => CreateDecoratedLinkDictionary());
+
+            (_decoratedLinkDictionary.TryGetValue(name, out LinkBase<T> link))
+                .IfFalse()
+                .Throw(new Exception($"Decorated link {name} not found"));
+
+            return link;
+        }
+
+        private void CreateDecoratedLinkDictionary()
+        {
+            //TODO: potential bug or innecessary iteration
+            // if LinkBase<T>, concrete type differs from its T type
+            // will be included into the dictionary as null
+            // find a way to filter out null values from the main where
+            _decoratedLinkDictionary = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(assembly =>
+                    assembly.GetTypes()
+                        .Where(type => 
+                            type.GetCustomAttributes(typeof(LinkAttribute), true).Count() > 0 
+                            //&& type.IsAssignableFrom(typeof(LinkBase<T>))
+                            ))
+                .ToDictionary(k => 
+                    (k.GetCustomAttributes(typeof(LinkAttribute), true)[0] as LinkAttribute).LinkName, 
+                    v => Activator.CreateInstance(v) as LinkBase<T>);
         }
 
         private bool RunLinkAndStop(LinkBase<T> link, int attempt = 0)
@@ -152,5 +190,6 @@ namespace FunctionalSharp.Patterns
 
             throw new ArgumentException("Type must be creatable");
         }
+        #endregion
     }
 }
