@@ -10,6 +10,7 @@ namespace FunctionalSharp.Data.Tests
     public class DataReadersTests
     {
         private List<List<(string, Object)>> data;
+        private List<List<(string, Object)>> lowerCaseData;
 
         [TestInitialize()]
         public void Setup()
@@ -21,6 +22,14 @@ namespace FunctionalSharp.Data.Tests
                 new List<(string, Object)> { ("Id", 30), ("Name", "Test 2"), ("Age", 32) },
                 new List<(string, Object)> { ("Id", 40), ("Name", "Test 3"), ("Age", 78) }
             };
+
+            lowerCaseData = new List<List<(string, Object)>>
+            {
+                new List<(string, Object)> { ("id", 10), ("name", "Test"), ("age", 20) },
+                new List<(string, Object)> { ("id", 20), ("name", "Test 1"), ("age", 55) },
+                new List<(string, Object)> { ("id", 30), ("name", "Test 2"), ("age", 32) },
+                new List<(string, Object)> { ("id", 40), ("name", "Test 3"), ("age", 78) }
+            };
         }
 
         [TestMethod()]
@@ -28,6 +37,30 @@ namespace FunctionalSharp.Data.Tests
         {
             var datareader = new CustomReader(data);
             var result = datareader.ToList<ResultType>();
+
+            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(10, result[0].Id);
+            Assert.AreEqual(40, result[3].Id);
+            Assert.AreEqual("Test 3", result[3].Name);
+        }
+
+        [TestMethod()]
+        public void When_ToList_ParseReader_GetListOfObjectsIgnoringCase()
+        {
+            var datareader = new CustomReader(data);
+            var result = datareader.ToList<LowerCaseResultType>(ignoreCase: true);
+
+            Assert.AreEqual(4, result.Count);
+            Assert.AreEqual(10, result[0].id);
+            Assert.AreEqual(40, result[3].id);
+            Assert.AreEqual("Test 3", result[3].name);
+        }
+
+        [TestMethod()]
+        public void When_ToList_ParseReaderToUpperCaseType_GetListOfObjectsIgnoringCase()
+        {
+            var datareader = new CustomReader(lowerCaseData);
+            var result = datareader.ToList<ResultType>(ignoreCase: true);
 
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual(10, result[0].Id);
@@ -59,6 +92,13 @@ namespace FunctionalSharp.Data.Tests
         public int Id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
+    }
+
+    internal class LowerCaseResultType
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public int age { get; set; }
     }
 
     internal class CustomReader : DbDataReader
