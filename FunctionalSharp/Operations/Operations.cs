@@ -2,6 +2,7 @@
 
 namespace FunctionalSharp.Operations
 {
+    /// <summary>Provides actions and exception throwing for a conditional operation chain.</summary>
     public abstract class Operations
     {
         /// <summary>

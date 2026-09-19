@@ -2,27 +2,29 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Matías Iacono</Authors>
     <Product>Fluent Sharp</Product>
     <Copyright>Matías Iacono</Copyright>
-    <RepositoryUrl>https://github.com/MatiasIac/netdevtools</RepositoryUrl>
-    <Description>FluentSharp for .Net Standard 2.0
-
-FluentSharp is a simple set of extension methods that will helps you creating code in a fluent style way. Minimizing the amount of code lines written for common behaviors.
-
-FluentSharp has the intention of remain small, not trying to solve every possible need or re invent already existing functionality and extensions. It will keep it simple!</Description>
+    <RepositoryUrl>https://github.com/MatiasIac/fluentsharp</RepositoryUrl>
+    <Description>Lightweight fluent extensions for C#: conditional operations, collection pipelines, LINQ equality comparers, data reader mapping, and chains of responsibility. Targets .NET Standard 2.0.</Description>
     <PackageId>FluentSharp</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.6</Version>
-    <PackageProjectUrl>https://github.com/MatiasIac/netdevtools</PackageProjectUrl>
+    <Version>1.0.7</Version>
+    <PackageProjectUrl>https://github.com/MatiasIac/fluentsharp</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
-    <AssemblyVersion>1.0.6.0</AssemblyVersion>
-    <FileVersion>1.0.6.0</FileVersion>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageTags>fluent;extensions;linq;collections;functional;csharp</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugType>portable</DebugType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Functions\" />
+    <None Include="../readme.md" Pack="true" PackagePath="/" />
+    <None Include="../LICENSE" Pack="true" PackagePath="/" />
   </ItemGroup>
 
 </Project>

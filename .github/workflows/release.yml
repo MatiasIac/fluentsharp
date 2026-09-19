@@ -1,0 +1,90 @@
+name: Publish NuGet release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nuget-release-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release
+    if: github.repository == 'MatiasIac/fluentsharp'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check version and master history
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          [xml] $project = Get-Content FunctionalSharp/FunctionalSharp.csproj -Raw
+          $version = [string] $project.Project.PropertyGroup.Version
+          if ($version -notmatch '^\d+\.\d+\.\d+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$') {
+            throw "The project Version must be a release version such as 1.0.7 or 1.0.7-rc.1."
+          }
+          if ($env:RELEASE_TAG -cne "v$version") {
+            throw "Release tag '$env:RELEASE_TAG' must match project version 'v$version'."
+          }
+          git merge-base --is-ancestor HEAD origin/master
+          if ($LASTEXITCODE -ne 0) {
+            throw "The release commit must be part of master."
+          }
+
+  build:
+    name: Verify release
+    needs: validate
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish verified packages
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Download verified packages
+        uses: actions/download-artifact@v8
+        with:
+          name: packages-ubuntu-latest
+          path: artifacts/packages
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Sign in to NuGet using trusted publishing
+        uses: NuGet/login@v1
+        id: nuget-login
+        with:
+          user: MatiasIacono
+
+      - name: Publish package and symbols to NuGet
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: >-
+          dotnet nuget push "artifacts/packages/*.nupkg"
+          --source https://api.nuget.org/v3/index.json
+          --api-key "$NUGET_API_KEY"
+          --skip-duplicate
+
+      - name: Attach packages to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" artifacts/packages/*.nupkg artifacts/packages/*.snupkg --clobber

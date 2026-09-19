@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace FunctionalSharp.Collections
 {
+    /// <summary>Provides fluent actions, transformations, and iteration over sequences.</summary>
     public static class Iterators
     {
 

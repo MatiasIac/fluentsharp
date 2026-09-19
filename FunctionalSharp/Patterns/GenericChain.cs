@@ -7,22 +7,37 @@ using System.Linq;
 namespace FunctionalSharp.Patterns
 {
 
+    /// <summary>Defines a reusable step in a chain of responsibility.</summary>
+    /// <typeparam name="T">The payload type.</typeparam>
     public abstract class LinkBase<T>
     {
+        /// <summary>Executes the link against the shared payload and cancellation flag.</summary>
+        /// <param name="data">The shared chain state.</param>
         public abstract void OnExecute(DataCargo<T> data);
     }
 
+    /// <summary>Holds the mutable state passed between links in a chain.</summary>
+    /// <typeparam name="T">The payload type.</typeparam>
     public sealed class DataCargo<T>
     {
+        /// <summary>The payload shared by all links.</summary>
         public T Payload;
+        /// <summary>Gets or sets whether the chain should stop after the current link.</summary>
         public bool Cancel { get; set; }
     }
 
+    /// <summary>Configures how a chain handles failures and repeated attempts.</summary>
     public sealed class Configuration
     {
+        /// <summary>Gets whether a link failure stops the chain without retrying.</summary>
         public bool StopOnFailure { get; }
+        /// <summary>Gets the total attempt limit when retries are enabled.</summary>
+        /// <remarks>Retries require StopOnFailure to be false. Zero stops the chain on a failure.</remarks>
         public int RepeatTimesOnFailure { get; }
 
+        /// <summary>Creates a chain's failure-handling configuration.</summary>
+        /// <param name="stopOnFailure">Whether to stop immediately when a link fails.</param>
+        /// <param name="repeatTimesOnFailure">The total attempt limit when not stopping on failure.</param>
         public Configuration(
             bool stopOnFailure = true,
             int repeatTimesOnFailure = 0
@@ -33,6 +48,8 @@ namespace FunctionalSharp.Patterns
         }
     }
 
+    /// <summary>Executes an ordered sequence of links against a shared payload.</summary>
+    /// <typeparam name="T">The payload type.</typeparam>
     public sealed class GenericChain<T>
     {
         private sealed class Link : LinkBase<T>
@@ -66,14 +83,20 @@ namespace FunctionalSharp.Patterns
             _chain = new List<LinkBase<T>>();
         }
 
+        /// <summary>Creates a chain with a default or newly constructed payload and default configuration.</summary>
         public static GenericChain<T> Create() => new GenericChain<T>(default, null);
 
+        /// <summary>Creates a chain with a default or newly constructed payload and supplied configuration.</summary>
         public static GenericChain<T> Create(Configuration configuration) => new GenericChain<T>(default, configuration);
 
+        /// <summary>Creates a chain with a supplied payload and optional configuration.</summary>
+        /// <remarks>A null reference payload is constructed if its type has a public parameterless constructor.</remarks>
         public static GenericChain<T> Create(T payload, Configuration configuration = null) => new GenericChain<T>(payload, configuration);
 
+        /// <summary>Appends an action to the chain and returns this chain.</summary>
         public GenericChain<T> AddLink(Action<DataCargo<T>> action) => AddLink(new Link(action));
 
+        /// <summary>Appends a custom link to the chain and returns this chain.</summary>
         public GenericChain<T> AddLink(LinkBase<T> link)
         {
             link.IfNull().Throw(new Exception("Chain Link cannot be null"));
@@ -83,9 +106,12 @@ namespace FunctionalSharp.Patterns
             return this;
         }
 
+        /// <summary>Finds a named LinkAttribute-decorated link in loaded assemblies and appends it.</summary>
         public GenericChain<T> AddDecoratedLink(string linkName) => AddLink(GetLinkByDecorationName(linkName));
 
         #region Events
+        /// <summary>Executes the links in order using the current payload.</summary>
+        /// <remarks>Cancellation or a stopping failure suppresses the completion callback.</remarks>
         public void Run()
         {
             bool failed = false;

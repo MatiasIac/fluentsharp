@@ -1,401 +1,182 @@
-# FluentSharp for .Net Standard 2.0
+# FluentSharp
 
-FluentSharp is a simple set of extension methods that will helps you creating code in a fluent style way. Minimizing the amount of code lines written for common behaviors.
+[![CI](https://github.com/MatiasIac/fluentsharp/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/MatiasIac/fluentsharp/actions/workflows/ci.yml)
+[![NuGet](https://img.shields.io/nuget/v/FluentSharp.svg)](https://www.nuget.org/packages/FluentSharp/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/MatiasIac/fluentsharp/blob/master/LICENSE)
 
-FluentSharp has the intention of remain small, not trying to solve every possible need or re invent already existing functionality and extensions. It will keep it simple!
+FluentSharp adds lightweight, fluent extensions to everyday C# code. Compose conditional actions, collection operations, LINQ comparisons, data reader mapping, and chains of responsibility using familiar .NET types and delegates.
 
-* [Usings and imports](#using-and-imports)
-* [Conditionals](#conditionals)
-    * [```IfTrue()```](#iftrue-function)
-    * [```IfFalse()```](#iffalse-function)
-    * [```IfNull()```](#ifnull-function)
-* [Exceptions](#exceptions)
-    * [```Throw()```](#throw-function)
-* [Iterators](#iterators)
-    * [Synchronous iterators](#synchronous-iterators)
-        * [```ForEvery()```](#forevery-function)
-        * [```For()```](#for-function)
-    * [Asynchronous iterators](#asynchronous-iterators)
-        * [```ForEveryAsync()```](#foreveryasync-function)
-        * [```ForAsync()```](#forasync-function)
-* [Operations](#operations)
-    * [```Then()```](#then-function)
-    * [```ThenAsync()```](#thenasync-function)
-* [Collection Alteration](#collection-alteration)
-    * [```Alter()```](#alter-function)
-    * [```AlterAsync()```](#alterasync-function)
-* [Linq Extensions](#linq-extensions)
-    * [```Intersect()```](#intersect-function)
-    * [```Except()```](#except-function)
-    * [Other extensions](#other-linq-extensions)
-* [DataReader Extensions](#datareader-extensions)
-    * [```ToList()```](#tolist-function)
-    * [```ToMany()```](#tomany-function)
-* [Pattern Implementations](#pattern-implementations)
-    * [```GenericChain<T>()```](#generic-chain)
+The library aims to stay small and build on existing .NET functionality. It supports a functional style of composition, while allowing ordinary actions and mutable objects.
 
-## Using and imports
+## Install
 
-In order to access the different extensions a set of namespaces will need to be added into the code.
-
-#### For boolean expressions
-
-```cs
-using FunctionalSharp.Validators;
+```shell
+dotnet add package FluentSharp
 ```
 
-#### For collection iterators
+The NuGet package is named **FluentSharp**. Its assembly and namespaces retain the original **FunctionalSharp** name for compatibility with existing code.
 
-```cs
+## Compatibility
+
+The library targets **.NET Standard 2.0** and has no third-party runtime package dependencies. It can be consumed by compatible .NET implementations, including .NET 10 and .NET Framework 4.7.2 or later. See Microsoft's [.NET Standard compatibility guidance](https://learn.microsoft.com/en-us/dotnet/standard/net-standard).
+
+Building this repository requires the **.NET 10 SDK** because the test project targets .NET 10. CI runs the tests on Windows and Linux; other compatible runtimes are not currently tested by CI.
+
+## Quick start
+
+```csharp
+using System;
+using System.Linq;
 using FunctionalSharp.Collections;
-```
+using FunctionalSharp.Validators;
 
-#### For Linq extensions
+var values = new[] { 1, 2, 3, 4, 5 };
 
-```cs
-using FunctionalSharp.Linq;
-```
+values
+    .Where(value => value % 2 == 0)
+    .Then(evens => Console.WriteLine($"Total: {evens.Sum()}"))
+    .ForEvery(value => Console.WriteLine(value));
 
-#### For DataReader extensions
-
-```cs
-using FunctionalSharp.Data;
-```
-
-#### For Design Pattern tools
-
-```cs
-using FunctionalSharp.Patterns;
-```
-
-## Conditionals
-
-It is common in coding to use conditions to derive the code execution. Most of these implementations are usually to validate input function parameters or executing one line after the condition is evaluated.
-
-```cs
-if (myVariable == 10) {
-    DoSomething();
-}
-```
-
-The previous is a common scenario in which, after a validation, a function (Or another line of code) is executed. Even though is easy to read, a fluent writing (And reading) could help describing our code better.
-
-```cs
-(myVariable == 10)
+(values.Length > 0)
     .IfTrue()
-    .Then(() => DoSomething());
+    .Then(() => Console.WriteLine("Values are available."));
 ```
 
-### IfTrue function
+## API guide
 
-Validates if the result of the boolean expression is true and returns a concrete [```Operations```](#operations) object.
+- [Namespaces](#namespaces)
+- [Conditions and exceptions](#conditions-and-exceptions)
+- [Collections](#collections)
+- [Async collection wrappers](#async-collection-wrappers)
+- [LINQ equality comparisons](#linq-equality-comparisons)
+- [Data readers](#data-readers)
+- [Chains of responsibility](#chains-of-responsibility)
+- [Build and test](#build-and-test)
+- [Maintenance and releases](#maintenance-and-releases)
 
-The following operations will have effect only if ```IfTrue``` evaluates as true.
+### Namespaces
 
-```cs
-true.IfTrue()...;
+| Namespace | Functionality |
+| --- | --- |
+| `FunctionalSharp.Validators` | `IfTrue`, `IfFalse`, and `IfNull` |
+| `FunctionalSharp.Collections` | Collection actions, transformations, and iteration |
+| `FunctionalSharp.Linq` | LINQ overloads accepting equality delegates |
+| `FunctionalSharp.Data` | `DbDataReader` mapping |
+| `FunctionalSharp.Patterns` | `GenericChain<T>`, configuration, and custom links |
+| `FunctionalSharp.Decorators` | Named links using `[Link]` |
+
+### Conditions and exceptions
+
+`IfTrue()`, `IfFalse()`, and `IfNull()` return an operation object. When the condition matches, `Then()` executes an action and `Throw()` throws the supplied exception. When it does not match, subsequent operations do nothing.
+
+```csharp
+using System;
+using FunctionalSharp.Validators;
+
+var count = 0;
+(count < 10).IfTrue().Then(() => count++);
+
+var isValid = false;
+isValid.IfFalse().Throw(new InvalidOperationException("Invalid state."));
 ```
 
-From an expression
+For argument validation:
 
-```cs
-object obj = null;
-
-(obj == null).IfTrue()...;
+```csharp
+user.IfNull().Throw(new ArgumentNullException(nameof(user)));
 ```
 
-For any other boolean expression
+`Then()` returns the same operation object, so multiple actions can be chained. The original condition is evaluated once. `Throw()` is terminal.
 
-```cs
-(10 < 20).IfTrue()...;
+### Collections
+
+`Then()` passes the entire sequence to an action and returns the original sequence. `Alter()` returns the sequence produced by your delegate, which may be a new collection or the original one.
+
+```csharp
+using System;
+using System.Linq;
+using FunctionalSharp.Collections;
+
+var values = new[] { 1, 2, 3, 4, 5 };
+
+var result = values
+    .Where(value => value < 4)
+    .Then(items => Console.WriteLine(items.Count()))
+    .Alter(items => items.Concat(new[] { 10 }))
+    .ToList();
+// result: 1, 2, 3, 10
 ```
 
-### IfFalse function
+`ForEvery()` executes an action for each item. `For()` stops at the first false condition; it does not resume at later matching items.
 
-Validates if the result of the boolean expression is false and returns a concrete [```Operations```](#operations) object.
+```csharp
+var values = new[] { 20, 21, 55, 77, 1 };
 
-The following operations will have effect only if ```IfFalse``` evaluates as false.
+values.ForEvery(value => Console.WriteLine(value));
+values.For(value => value < 22, value => Console.WriteLine(value)); // 20, 21
+values.For((value, index) => index < 3, value => Console.WriteLine(value));
 
-```cs
-false.IfFalse()...;
-```
-
-From an expression
-
-```cs
-object obj = null;
-
-(obj != null).IfFalse()...;
-```
-
-For any other boolean expression
-
-```cs
-(10 > 20).IfFalse()...;
-```
-
-### IfNull function
-
-Validates if the object is null and returns a concrete [```Operations```](#operations) object.
-
-The following operations will have effect only if ```IfNull``` evaluates as true.
-
-```cs
-null.IfNull()...;
-```
-
-From an expression
-
-```cs
-object obj = null;
-
-obj.IfNull()...;
-```
-
-## Exceptions
-
-Propagating malformed data across our code usually requires validations to be propagated too. In particular, input function parameters that are required by the subsequent code, can be reason enough to stop the code execution and fails with a controlled exception.
-
-### Throw function
-
-```Throw``` will throw the defined instance exception if ```IfNull```, ```IfFalse``` or ```IfTrue``` validates as expected.
-
-
-```cs
-[true|false|null].[IfFalse|IfTrue|IfNull].Throw(new Exception());
-```
-
-From an expression
-
-```cs
-public void ValidateUser(User user) 
+values.For(value =>
 {
-    user.IfNull().Throw(new ArgumentNullException("User cannot be null"));
-}
+    Console.WriteLine(value);
+    return value != 55; // Stop after processing 55.
+});
 ```
 
-For any other boolean expression
+`For()` and `ForEvery()` return `void`. These extensions do not automatically materialize a sequence; enumerating it inside `Then()` and again afterward can execute a deferred query twice.
 
-```cs
-(10 > 20).IfFalse().Throw(new Exception());
+### Async collection wrappers
+
+The available wrappers are `ThenAsync()`, `AlterAsync()`, `ForEveryAsync()`, and the three `ForAsync()` overloads.
+
+```csharp
+await values.ForEveryAsync(value => Console.WriteLine(value));
+await values.ForAsync(value => value < 22, value => Console.WriteLine(value));
+await values.ForAsync((value, index) => index < 3, value => Console.WriteLine(value));
+await values.ForAsync(value => value < 22);
+
+var original = await values.ThenAsync(items => Console.WriteLine(items.Count()));
+var transformed = await values.AlterAsync(items => items.Where(value => value > 20));
 ```
 
-## Iterators
+These methods accept **synchronous delegates**. `ForEveryAsync()` and `ForAsync()` run synchronous iteration through `Task.Run`. `ThenAsync()` and `AlterAsync()` execute their delegate synchronously and wrap the result in a task. They do not support awaiting asynchronous callbacks; passing an `async` lambda to an `Action` parameter creates `async void` work that the wrapper cannot await.
 
-Iterators, as conditionals, are intended to work over collections in a fluent way. Also, can be used in combination with other collection interactors such as LinQ.
+### LINQ equality comparisons
 
-### Synchronous iterators
+Use equality delegates with `Intersect`, `Except`, `Contains`, `Distinct`, `GroupBy`, `GroupJoin`, `Join`, `ToDictionary`, `ToLookup`, and `Union`.
 
-Iterates over collections in a synchronous way.
+```csharp
+using FunctionalSharp.Linq;
 
-#### ForEvery function
+var first = new[] { 1, 2, 3, 4 };
+var second = new[] { 3, 4, 5 };
 
-Iterates across the collection passing the current element from the collection.
-
-```cs
-var collection = new List<int>() { 20, 21, 55, 77, 1 };
-var total = 1;
-
-collection.ForEvery(c => total *= c);
-//total is equals to 1778700
+var shared = first.Intersect(second, (left, right) => left == right); // 3, 4
+var remaining = first.Except(second, (left, right) => left == right); // 1, 2
+var containsThree = first.Contains(3, (left, right) => left == right);
 ```
 
-#### For function
+The delegate must describe equality. Hash-based LINQ operations also require equal values to have equal hash codes. Overloads without a hash delegate use the object's existing `GetHashCode()` implementation. When comparing objects by a property, the `Distinct` overload with a hash delegate lets you supply both:
 
-Iterate across the collection applying a particular condition. If the condition is not met (true), it stops.
-
-```cs
-collection.For(c => c < 22, c => Console.WriteLine(c));
+```csharp
+var uniqueUsers = users.Distinct(
+    (left, right) => left.Id == right.Id,
+    user => user.Id.GetHashCode());
 ```
 
-The ```For``` function also can inject the current iteration index into the condition expression.
+That overload currently requires a type with a public parameterless constructor. For other hash-based operations, use types whose `GetHashCode()` agrees with the equality delegate, or an appropriate standard LINQ comparer.
 
-```cs
-collection.For((c, index) => index < 3, c => Console.writeLine(c));
-```
+### Data readers
 
-Also, ```For``` can receive a ```Func<T, bool>``` action to control the iteration flow. It will stop iterating the collection if the action returns false.
+`ToList<T>()` maps rows from the current `DbDataReader` result set to public properties with matching column names. The destination type needs a public parameterless constructor.
 
-```cs
-collection.For(c => c < 22);
-```
+```csharp
+using FunctionalSharp.Data;
 
-```For``` function is a terminal function and will not return the original colelction.
+// For a reader containing columns Id, Name, and Age:
+var users = reader.ToList<User>();
 
-### Asynchronous iterators
-
-As its synchronous counterparts, asynchronous functions, ```ForEveryAsync``` and ```ForAsync``` are available.
-
-#### ForEveryAsync function
-
-Iterates, asynchonous, across the collection passing the current element from the collection.
-
-```cs
-var collection = new List<int>() { 20, 21, 55, 77, 1 };
-
-await collection.ForEveryAsync(item => ...);
-```
-(For additional usage details see the synchonous versions)
-
-#### ForAsync function
-
-```cs
-await collection.ForAsync(c => [boolean condition], c => ...);
-```
-
-```cs
-await collection.ForAsync((c, index) => [boolean condition], c => ...);
-```
-
-```cs
-await collection.ForAsync(c => [boolean condition]);
-```
-
-(For additional usage details see the synchonous versions)
-
-## Operations
-
-As result of a boolean evaluation a concrete object with additional operations will be returned.
-
-### Throw function
-
-Refers to [Throw function](#throw-function).
-
-### Then function
-
-Allow to continue processing a particular expression after a boolean evaluation. The ```Then``` function will execute an ```Action``` predicate.
-
-```cs
-var total = 0;
-
-//...
-//some operations
-//...
-
-(total < 10).IfTrue().Then(() => total++);
-```
-
-#### Then function for collections
-
-Having a collection, passes the collection into a delegate for it manipulation.
-
-```cs
-var collection = new List<int>() { 20, 21, 55, 77, 1 };
-
-collection.Then(c => DoSomethingWithCollection(c));
-```
-Because ```Then``` function is extending collections, it can be used together with LinQ.
-
-```cs
-collection.Where(c => c < 55).Then(c => DoSomething(c));
-```
-
-```Then``` function returns the input collection.
-
-### ThenAsync function
-
-```ThenAsync``` allows to perform the same operation than ```Then``` function but in an asynchonous context.
-
-```cs
-await collection.ThenAsync(c => ...);
-```
-
-## Collection Alteration
-
-Handling collections with the existent extensions creates a new collection after it manipulation. The ```Then()``` function creates a context in which the current collection is passed into context but cannot be modified, or produce a new collection object after it manipulation. ```Alter()``` function, in the other hand, allows to produce a new collection from the executed context.
-
-### Alter function
-
-Having a collection, passes the collection into the expression context and returns a new collection based on the context result.
-
-```cs
-var collection = new List<int>() { 1, 2, 3, 4, 5 };
-
-collection.Alter(c =>
-{
-    var list = c.ToList();
-    list.Remove(1);
-    return list;
-}).Count();
-```
-
-### AlterAsync function
-
-```AlterAsync``` allows to perform the same operation than ```Alter``` function but in an asynchonous context.
-
-```cs
-await collection.AlterAsync(c => ...);
-```
-
-## Linq Extensions
-
-Linq is one of the APIs which allows us to code in a fluent way. Even though, there are some extensions that requires from us to write additional clases to handle equality. While this can give us great flexibility, force us to stack up our architecture.
-
-Having the following set of data:
-
-```cs
-var A = new List<int> { 1, 2, 3, 4, 5, 6, 10, 11, 12, 13 };
-var B = new List<int> { 6, 7, 8, 9, 10, 14, 15, 16, 17, 18 };
-var D = new List<int> { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
-```
-
-### Intersect function
-
-Extends the current ```Intersect()``` adding the option of passing lambda expressions as comparer.
-
-```cs
-var C = A.Intersect(B, (a, b) => a == b);
-```
-
-### Except function
-
-Extends the current ```Except()``` adding the option of passing lambda expressions as comparer.
-
-```cs
-var C = A.Except(D, (a, d) => a == d);
-```
-
-### Other Linq Extensions
-
-Following a similar implementation, other LinQ extensions that requires ```IEqualityComparer<T>``` implementation are extended to support a lambda equality comparer function.
-
-* ```Contains()```
-* ```Distinct()```
-* ```GroupBy()```
-* ```GroupJoin()```
-* ```Join()```
-* ```ToDictionary()```
-* ```ToLookup()```
-* ```Union()```
-
-## DataReader extensions
-
-It is common when reading data from a database using a DataReader object, to iterate through the records with the intention of produce a collection of an internal known type. Translating a non-objectified type of data into one that our code can understand.
-
-### ToList Function
-
-The ```ToList<T>()``` extension uses the content of a single resulting query processed by an active DataReader, and convert the resulting rows into a list of expected type ```T``` based on the entity property type names and selected field names, and matching the query field types with the .Net property entity types.
-
-Having the following set of data:
-
-```text
-Id    Name    Age
-10    John    23
-20    Peter   43
-30    Claire  19
-40    Julia   56
-```
-
-And the following SQL query:
-
-```sql
-SELECT Id, Name, Age FROM Users
-```
-
-With a type in our code:
-
-```cs
-class User
+public class User
 {
     public int Id { get; set; }
     public string Name { get; set; }
@@ -403,98 +184,84 @@ class User
 }
 ```
 
-Can be converted to a ```List<User>()``` from the handling DataReader:
+Pass `ignoreCase: true` to match column and property names without case sensitivity:
 
-```cs
-var listOfUsers = datareader.ToList<User>();
+```csharp
+var users = reader.ToList<User>(ignoreCase: true);
 ```
 
-### ToMany Function
+`ToMany` maps two, three, or four consecutive result sets into a tuple of lists:
 
-As ```ToList<T>()``` function, ```ToMany<...>()``` allows to read and translate a DataReader that has many query results. Each type used with ```ToMany<...>()``` function is handled as ordinal relevance. The returning type is a tuple with many values as types.
-
-```cs
-var (listOfUsers, listOfCompanies) = datareader.ToMany<User, Company>();
+```csharp
+var (users, companies) = reader.ToMany<User, Company>();
 ```
 
-```ToMany<...>()``` provides up to 4 possible types, allowing to handle 4 possible query results from the DataReader. ```ToMany<T1, T2>()```, ```ToMany<T1, T2, T3>()```, ```ToMany<T1, T2, T3, T4>()```.
+Missing result sets produce empty lists. The caller owns and disposes the reader. Mapping uses reflection and `Convert.ChangeType`; columns must match writable properties and contain convertible values. There is no special handling for `DBNull`, nullable property types, or unmatched columns.
 
-## Pattern Implementations
+### Chains of responsibility
 
-In order of speed up implementations, several design patterns are encapsulated usuing a pseudo functional approach.
+`GenericChain<T>` executes links in order, passing a shared `DataCargo<T>` containing the payload and a cancellation flag.
 
-### Generic Chain
+```csharp
+using System;
+using FunctionalSharp.Patterns;
 
-```GenericChain<T>()``` encapsulates **chain of responsability** design pattern. It will execute a defined order of actions, in a sequential order, passing a user defined payload across the actions.
-
-```cs
-var chain = GenericChain<string>.Create(string.Empty);
+GenericChain<int>.Create(0)
+    .AddLink(data => data.Payload += 10)
+    .AddLink(data => data.Payload *= 2)
+    .OnError((payload, exception) => Console.WriteLine(exception.Message))
+    .OnCompleted(payload => Console.WriteLine(payload)) // 20
+    .Run();
 ```
 
-if you need to use a custom type, the type must has an accessible contructor with zero parameters.
+`Create()` uses a default value-type payload or constructs a reference type with an accessible parameterless constructor. Pass an existing payload to `Create(payload)` to retain that instance. For strings, supply a value such as `string.Empty`.
 
-```cs
-class MyCustomType { ... }
+Set `data.Cancel = true` in a link to stop processing. Cancellation also suppresses `OnCompleted()`. By default, an exception stops the chain and calls `OnError()` if a handler is registered; caught link exceptions are not automatically rethrown.
 
-var chain = GenericChain<MyCustomType>.Create();
+```csharp
+var chain = GenericChain<int>.Create(0,
+    new Configuration(stopOnFailure: false, repeatTimesOnFailure: 3));
 ```
 
-As any value-type, it is possible to inject a pre instantiated custom type and used as payload across the action calls.
+In the current implementation, this configuration allows up to **three total attempts** per failing link, then continues. Retries run only when `stopOnFailure` is false, and `OnError()` runs for each failed attempt. A zero repeat count currently stops on a failure even when `stopOnFailure` is false.
 
-```cs
-var chain = GenericChain<MyCustomType>.Create(new MyCustomType());
-```
+Custom links can inherit from `LinkBase<T>`:
 
-Once the chain is created new links for the chain can be added.
-
-```cs
-chain
-    .AddLink(event => Console.WriteLine("My action"))
-    .AddLink(event => Console.WriteLine("My another action"));
-```
-
-An action can also be defined through a custom type derived from ```LinkBase``` class.
-
-```cs
-class MyOwnAction : LinkBase<MyCustomType>
+```csharp
+public class Increment : LinkBase<int>
 {
-    override void OnExecute(DataCargo<MyCustomType> data)
+    public override void OnExecute(DataCargo<int> data)
     {
-        ...
+        data.Payload++;
     }
 }
+
+// Add the link with chain.AddLink(new Increment()).
 ```
 
-#### Configuring the chain
+To discover a link by name, decorate a concrete link class with `[Link("Increment")]` from `FunctionalSharp.Decorators`, then call `.AddDecoratedLink("Increment")`. Discovery scans loaded assemblies; use unique names and constructible link types matching the chain's payload type.
 
-Generic Chain can be configured on how to react when exceptions are thrown by each individual link.
+## Build and test
 
-Use ```stopOnFailure``` property to decide if the chain should stop moving forward if the current link fails.
+Install the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0), clone the repository, and run these commands from its root:
 
-Use ```repeatTimesOnFailure``` property to set how many attempts over a failing link should happened to consider it as failed.
-
-```cs
-var chain = GenericChain<int>.Create(0, 
-    new Configuration(
-        stopOnFailure: false, //do not stop on failure
-        repeatTimesOnFailure: 3 //retry 3 times on each link failure
-    )
-);
+```shell
+dotnet restore FunctionalSharp/FunctionalSharp.sln
+dotnet build FunctionalSharp/FunctionalSharp.sln --configuration Release --no-restore
+dotnet test FunctionalSharpTests/FunctionalSharpTests.csproj --configuration Release --no-build --no-restore --logger "trx;LogFileName=tests.trx" --collect:"XPlat Code Coverage" --results-directory artifacts/test-results
+dotnet pack FunctionalSharp/FunctionalSharp.csproj --configuration Release --no-build --no-restore --output artifacts/packages
 ```
 
-#### OnError and OnCompleted
+Test results and Cobertura coverage reports are written under `artifacts/test-results`. The `.nupkg` and `.snupkg` files are written under `artifacts/packages`. Package creation is an explicit step; building alone does not create a package.
 
-Use ```OnError<T, Exception>()``` to capture and handle exceptions thrown by a processing link.
+Pushes to `master` run the same checks on Windows and Linux through GitHub Actions. Results and packages are available as workflow artifacts.
 
-```cs
-.OnError((data, ex) => 
-{
-    ...
-})
-```
+## Maintenance and releases
 
-```OnCompleted<T>()``` is called when the chain completed link processing. If an error happened and ```stopOnFailure``` was enabled, this method is not called.
+FluentSharp is maintained solely by Matías Iacono. Development takes place directly on `master`; external pull requests are not accepted.
 
-#### Executing the chain
+See the [changelog](https://github.com/MatiasIac/fluentsharp/blob/master/CHANGELOG.md) for changes and the [release guide](https://github.com/MatiasIac/fluentsharp/blob/master/docs/RELEASING.md) for the maintainer's NuGet setup and release process. Publishing a versioned GitHub Release starts the verified NuGet publishing workflow.
 
-Once the links, error and success handlers were configured, use ```Run()``` method to start the chain.
+## License
+
+FluentSharp is licensed under the [MIT license](https://github.com/MatiasIac/fluentsharp/blob/master/LICENSE).

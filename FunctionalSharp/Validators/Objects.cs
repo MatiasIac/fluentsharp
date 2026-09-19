@@ -2,6 +2,7 @@
 
 namespace FunctionalSharp.Validators
 {
+    /// <summary>Creates conditional operation chains from null checks.</summary>
     public static class Objects
     {
         /// <summary>

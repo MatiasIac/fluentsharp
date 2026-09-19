@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 
 namespace FunctionalSharp.Collections
 {
+    /// <summary>Provides task-returning wrappers for synchronous collection operations.</summary>
+    /// <remarks>
+    /// These methods accept synchronous delegates, not asynchronous callbacks.
+    /// Iteration uses Task.Run; ThenAsync and AlterAsync execute their delegates synchronously.
+    /// </remarks>
     public static class AsyncIterators
     {
 
@@ -19,6 +24,11 @@ namespace FunctionalSharp.Collections
             Action<IEnumerable<T>> action) => await Task.FromResult(collection.Then(action));
 
 
+        /// <summary>Executes a synchronous sequence transformation and wraps its result in a task.</summary>
+        /// <typeparam name="T">The sequence element type.</typeparam>
+        /// <param name="collection">The sequence to transform.</param>
+        /// <param name="action">A synchronous delegate producing the result sequence.</param>
+        /// <returns>A task containing the delegate's result.</returns>
         public static async Task<IEnumerable<T>> AlterAsync<T>(this IEnumerable<T> collection, Func<IEnumerable<T>, IEnumerable<T>> action)
             => await Task.FromResult(collection.Alter(action));
 

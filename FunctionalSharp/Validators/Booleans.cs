@@ -2,6 +2,7 @@
 
 namespace FunctionalSharp.Validators
 {
+    /// <summary>Creates conditional operation chains from boolean values.</summary>
     public static class Booleans
     {
         /// <summary>
