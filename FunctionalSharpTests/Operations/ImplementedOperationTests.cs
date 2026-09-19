@@ -1,4 +1,4 @@
-﻿using FunctionalSharp.Validators;
+using FunctionalSharp.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace FunctionalSharp.Operations.Tests
@@ -12,7 +12,7 @@ namespace FunctionalSharp.Operations.Tests
             var result = string.Empty;
 
             true
-                .IfTrue()
+                .IfTrue
                 .Then(() => result = "test passed");
             
             Assert.AreEqual("test passed", result);

@@ -20,7 +20,7 @@ namespace FunctionalSharp.Collections.Tests
         public async Task When_ThenAsync_PerformsOperation_ExpectExecution()
         {
             var sum = 0;
-            await _collection.ThenAsync(collection => sum = collection.Sum());
+            await _collection.ThenAsync(collection => { sum = collection.Sum(); return Task.CompletedTask; });
 
             Assert.AreEqual(28, sum);
         }
@@ -29,7 +29,7 @@ namespace FunctionalSharp.Collections.Tests
         public async Task When_ForEveryAsync_Iterate_ExpectExecution()
         {
             var sum = 0;
-            await _collection.ForEveryAsync(item => sum += item);
+            await _collection.ForEveryAsync(item => { sum += item; return Task.CompletedTask; });
 
             Assert.AreEqual(28, sum);
         }
@@ -45,7 +45,7 @@ namespace FunctionalSharp.Collections.Tests
                     index = i; 
                     return item < 3; 
                 },
-                item => sum += item
+                item => { sum += item; return Task.CompletedTask; }
             );
 
             Assert.AreEqual(2, index);
@@ -56,7 +56,7 @@ namespace FunctionalSharp.Collections.Tests
         public async Task When_ForAsync_Iterate_ExpectExecution()
         {
             var index = 0;
-            await _collection.ForAsync((item) => ++index < 3);
+            await _collection.ForAsync(item => Task.FromResult(++index < 3));
 
             Assert.AreEqual(3, index);
         }
@@ -65,7 +65,7 @@ namespace FunctionalSharp.Collections.Tests
         public async Task When_ForAsync_IterateWithoutIndex_ExpectExecution()
         {
             var sum = 0;
-            await _collection.ForAsync(c => c <= 3, item => sum += item);
+            await _collection.ForAsync(c => c <= 3, item => { sum += item; return Task.CompletedTask; });
 
             Assert.AreEqual(6, sum);
         }
@@ -76,7 +76,7 @@ namespace FunctionalSharp.Collections.Tests
             var newCollection = await _collection.AlterAsync(col => {
                 var c = col.ToList();
                 c.Add(10);
-                return c;
+                return Task.FromResult<IEnumerable<int>>(c);
             });
 
             Assert.AreEqual(8, newCollection.Count());

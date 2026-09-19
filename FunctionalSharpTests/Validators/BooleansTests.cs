@@ -1,4 +1,4 @@
-﻿using FunctionalSharp.Validators;
+using FunctionalSharp.Validators;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -11,48 +11,48 @@ namespace FunctionalSharp.Tests
         public void When_IfTrue_Evaluates_True_Expects_Exception()
         {
             Assert.Throws<Exception>(() => true
-                .IfTrue()
-                .Throw(new Exception("message")));
+                .IfTrue
+                .Throw(() => new Exception("message")));
         }
 
         [TestMethod()]
         public void When_IfTrue_Evaluates_False_Expects_NoException()
         {
             false
-                .IfTrue()
-                .Throw(new Exception("message"));
+                .IfTrue
+                .Throw(() => new Exception("message"));
         }
 
         [TestMethod()]
         public void When_IfTrue_Evaluates_TrueWithCustomException_Expects_CustomException()
         {
             Assert.Throws<CustomException>(() => true
-                .IfTrue()
-                .Throw(new CustomException("Custom message")));
+                .IfTrue
+                .Throw(() => new CustomException("Custom message")));
         }
 
         [TestMethod()]
         public void When_IfFalse_Evaluates_False_Expects_Exception()
         {
             Assert.Throws<Exception>(() => false
-                .IfFalse()
-                .Throw(new Exception("message")));
+                .IfFalse
+                .Throw(() => new Exception("message")));
         }
 
         [TestMethod()]
         public void When_IfFalse_Evaluates_True_Expects_NoException()
         {
             true
-                .IfFalse()
-                .Throw(new Exception("message"));
+                .IfFalse
+                .Throw(() => new Exception("message"));
         }
 
         [TestMethod()]
         public void When_IfFalse_Evaluates_FalseWithCustomException_Expects_CustomException()
         {
             Assert.Throws<CustomException>(() => false
-                .IfFalse()
-                .Throw(new CustomException("Custom message")));
+                .IfFalse
+                .Throw(() => new CustomException("Custom message")));
         }
 
         private class CustomException(string message) : Exception(message)

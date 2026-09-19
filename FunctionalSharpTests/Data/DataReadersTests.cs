@@ -1,54 +1,31 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.Common;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Data;
 
 namespace FunctionalSharp.Data.Tests
 {
-    [TestClass()]
+    [TestClass]
     public class DataReadersTests
     {
-        private List<List<(string, Object)>> data;
-        private List<List<(string, Object)>> lowerCaseData;
-
-        [TestInitialize()]
-        public void Setup()
-        {
-            data = new List<List<(string, Object)>>
-            {
-                new List<(string, Object)> { ("Id", 10), ("Name", "Test"), ("Age", 20) },
-                new List<(string, Object)> { ("Id", 20), ("Name", "Test 1"), ("Age", 55) },
-                new List<(string, Object)> { ("Id", 30), ("Name", "Test 2"), ("Age", 32) },
-                new List<(string, Object)> { ("Id", 40), ("Name", "Test 3"), ("Age", 78) }
-            };
-
-            lowerCaseData = new List<List<(string, Object)>>
-            {
-                new List<(string, Object)> { ("id", 10), ("name", "Test"), ("age", 20) },
-                new List<(string, Object)> { ("id", 20), ("name", "Test 1"), ("age", 55) },
-                new List<(string, Object)> { ("id", 30), ("name", "Test 2"), ("age", 32) },
-                new List<(string, Object)> { ("id", 40), ("name", "Test 3"), ("age", 78) }
-            };
-        }
-
-        [TestMethod()]
+        [TestMethod]
         public void When_ToList_ParseReader_GetListOfObjects()
         {
-            var datareader = new CustomReader(data);
-            var result = datareader.ToList<ResultType>();
+            using var table = CreateTable();
+            using var reader = table.CreateDataReader();
+            var result = reader.ToList<ResultType>();
 
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual(10, result[0].Id);
             Assert.AreEqual(40, result[3].Id);
             Assert.AreEqual("Test 3", result[3].Name);
+            Assert.IsFalse(reader.IsClosed);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void When_ToList_ParseReader_GetListOfObjectsIgnoringCase()
         {
-            var datareader = new CustomReader(data);
-            var result = datareader.ToList<LowerCaseResultType>(ignoreCase: true);
+            using var table = CreateTable();
+            using var reader = table.CreateDataReader();
+            var result = reader.ToList<LowerCaseResultType>(ignoreCase: true);
 
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual(10, result[0].id);
@@ -56,11 +33,12 @@ namespace FunctionalSharp.Data.Tests
             Assert.AreEqual("Test 3", result[3].name);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void When_ToList_ParseReaderToUpperCaseType_GetListOfObjectsIgnoringCase()
         {
-            var datareader = new CustomReader(lowerCaseData);
-            var result = datareader.ToList<ResultType>(ignoreCase: true);
+            using var table = CreateTable(lowerCase: true);
+            using var reader = table.CreateDataReader();
+            var result = reader.ToList<ResultType>(ignoreCase: true);
 
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual(10, result[0].Id);
@@ -68,183 +46,48 @@ namespace FunctionalSharp.Data.Tests
             Assert.AreEqual("Test 3", result[3].Name);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void When_ToMany_ParseReader_GetListOfSingleObjects()
         {
-            var datareader = new CustomReader(data);
-            var (result, emptyType) = datareader.ToMany<ResultType, EmptyType>();
+            using var table = CreateTable();
+            using var reader = table.CreateDataReader();
+            var (result, empty) = reader.ToMany<ResultType, EmptyType>();
 
             Assert.AreEqual(4, result.Count);
             Assert.AreEqual(10, result[0].Id);
             Assert.AreEqual(40, result[3].Id);
             Assert.AreEqual("Test 3", result[3].Name);
-            Assert.AreEqual(0, emptyType.Count);
-        }
-    }
-
-    internal class EmptyType
-    {
-
-    }
-
-    internal class ResultType
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-    }
-
-    internal class LowerCaseResultType
-    {
-        public int id { get; set; }
-        public string name { get; set; }
-        public int age { get; set; }
-    }
-
-    internal class CustomReader : DbDataReader
-    {
-        private List<List<(string, Object)>> _dataCollection;
-        private int dataIndex = -1;
-
-        public CustomReader(List<List<(string, Object)>> dataCollection)
-        {
-            _dataCollection = dataCollection;
+            Assert.AreEqual(0, empty.Count);
+            Assert.IsFalse(reader.IsClosed);
         }
 
-        #region not implemented
-        public override object this[string name] => throw new NotImplementedException();
-
-        public override int Depth => throw new NotImplementedException();
-
-        public override bool HasRows => throw new NotImplementedException();
-
-        public override bool IsClosed => throw new NotImplementedException();
-
-        public override int RecordsAffected => throw new NotImplementedException();
-
-        public override bool GetBoolean(int ordinal)
+        private static DataTable CreateTable(bool lowerCase = false)
         {
-            throw new NotImplementedException();
+            var table = new DataTable();
+            table.Columns.Add(lowerCase ? "id" : "Id", typeof(int));
+            table.Columns.Add(lowerCase ? "name" : "Name", typeof(string));
+            table.Columns.Add(lowerCase ? "age" : "Age", typeof(int));
+            table.Rows.Add(10, "Test", 20);
+            table.Rows.Add(20, "Test 1", 55);
+            table.Rows.Add(30, "Test 2", 32);
+            table.Rows.Add(40, "Test 3", 78);
+            return table;
         }
 
-        public override byte GetByte(int ordinal)
+        public sealed class EmptyType { }
+
+        public sealed class ResultType
         {
-            throw new NotImplementedException();
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public int Age { get; set; }
         }
 
-        public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length)
+        public sealed class LowerCaseResultType
         {
-            throw new NotImplementedException();
-        }
-
-        public override char GetChar(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetDataTypeName(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override DateTime GetDateTime(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override decimal GetDecimal(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override double GetDouble(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerator GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override float GetFloat(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override Guid GetGuid(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override short GetInt16(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int GetInt32(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override long GetInt64(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int GetOrdinal(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetString(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override object GetValue(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int GetValues(object[] values)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool IsDBNull(int ordinal)
-        {
-            throw new NotImplementedException();
-        }
-        #endregion
-
-        public override object this[int ordinal] => _dataCollection[dataIndex][ordinal].Item2;
-
-        public override string GetName(int ordinal)
-        {
-            return _dataCollection[dataIndex][ordinal].Item1;
-        }
-
-        public override int FieldCount => _dataCollection[dataIndex].Count;
-
-        public override bool NextResult()
-        {
-            return false;
-        }
-
-        public override Type GetFieldType(int ordinal)
-        {
-            return _dataCollection[dataIndex][ordinal].Item2.GetType();
-        }
-
-        public override bool Read()
-        {
-            return ++dataIndex < _dataCollection.Count;
+            public int id { get; set; }
+            public string name { get; set; }
+            public int age { get; set; }
         }
     }
 }

@@ -73,13 +73,11 @@ namespace FunctionalSharp.Linq.Tests
         }
 
         [TestMethod()]
-        public void When_Except_RemovesFromRight_Get_Results()
+        public void When_Except_SecondContainsEveryValue_Return_Empty()
         {
-            var C = A.Except(E, (a, e) => a != e);
-            var expectedList = new List<int> { 1, 2, 3, 4, 5, 6, 10, 11, 12, 13 };
+            var C = A.Except(E, (a, e) => a == e);
 
-            Assert.AreEqual(10, C.Count());
-            Assert.IsTrue(C.All(c => expectedList.Contains(c)));
+            Assert.AreEqual(0, C.Count());
         }
 
         [TestMethod()]

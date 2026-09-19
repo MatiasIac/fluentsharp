@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FunctionalSharp.Composition;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +22,7 @@ namespace FunctionalSharp.Collections.Tests
             var sum = 0;
             var set = intCollection
                 .Where(i => i <= 23)
-                .Then(collection => sum = collection.Sum(i => i));
+                .Tap(collection => sum = collection.Sum(i => i));
 
             Assert.AreEqual(42, sum);
         }
@@ -79,7 +80,7 @@ namespace FunctionalSharp.Collections.Tests
         {
             var collection = intCollection
                 .Where(i => i < 23)
-                .Alter(col => AddNumber(col.ToList()));
+                .Pipe(col => AddNumber(col.ToList()));
 
             Assert.AreEqual(4, collection.Count());
 

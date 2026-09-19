@@ -1,99 +1,52 @@
-﻿using System;
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace FunctionalSharp.Collections
+namespace FunctionalSharp.Collections;
+
+/// <summary>Immediate sequential collection actions, with first-false stopping.</summary>
+public static class Iterators
 {
-    /// <summary>Provides fluent actions, transformations, and iteration over sequences.</summary>
-    public static class Iterators
+    /// <summary>Executes the action once for every item in enumeration order.</summary>
+    public static void ForEvery<T>(this IEnumerable<T> collection, Action<T> action)
     {
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(action);
+        foreach (var item in collection) action(item);
+    }
 
-        /// <summary>
-        /// Allows to iterate a collection across all its elements applying a particular action
-        /// </summary>
-        /// <typeparam name="T">Any</typeparam>
-        /// <param name="collection"></param>
-        /// <param name="action"></param>
-        /// <returns>The input IEnumerable&lt;<typeparamref name="T"/>&gt; collection used in the operation</returns>
-        public static IEnumerable<T> Then<T>(this IEnumerable<T> collection, Action<IEnumerable<T>> action)
+    /// <summary>Checks a zero-based indexed condition before each action; stops at its first false result.</summary>
+    public static void For<T>(this IEnumerable<T> collection, Func<T, int, bool> condition, Action<T> action)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(condition);
+        ArgumentNullException.ThrowIfNull(action);
+        var index = 0;
+        foreach (var item in collection)
         {
-            action(collection);
-            return collection;
+            if (!condition(item, index++)) break;
+            action(item);
         }
+    }
 
-        /// <summary>
-        /// Allows to manipulate the incoming collection and returns a modified new one
-        /// </summary>
-        /// <typeparam name="T">Any</typeparam>
-        /// <param name="collection"></param>
-        /// <param name="action"></param>
-        /// <returns>Returns a new IEnumerable&lt;<typeparamref name="T"/>&gt; collection produced by the operation</returns>
-        public static IEnumerable<T> Alter<T>(this IEnumerable<T> collection,
-            Func<IEnumerable<T>, IEnumerable<T>> action) => action(collection);
-
-        /// <summary>
-        /// Iterates across the collection passing the current item to the defined action
-        /// </summary>
-        /// <typeparam name="T">A type supported by the iterable collection</typeparam>
-        /// <param name="collection">Iterable collection</param>
-        /// <param name="action">Action to be executed for each collection item</param>
-        public static void ForEvery<T>(this IEnumerable<T> collection, Action<T> action)
+    /// <summary>Checks the condition before each action; stops at its first false result.</summary>
+    public static void For<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> action)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(condition);
+        ArgumentNullException.ThrowIfNull(action);
+        foreach (var item in collection)
         {
-            foreach (var item in collection)
-            {
-                action(item);
-            }
+            if (!condition(item)) break;
+            action(item);
         }
+    }
 
-        /// <summary>
-        /// Iterate the IEnumerable&lt;<typeparamref name="T"/>&gt; collection and applies the expected condition
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collection"></param>
-        /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, int index, bool output&gt;</param>
-        /// <param name="action">Action to be executed for each collection item</param>
-        public static void For<T>(this IEnumerable<T> collection, Func<T, int, bool> condition, Action<T> action)
-        {
-            var index = -1;
-
-            foreach (var item in collection)
-            {
-                index++;
-                if (!condition(item, index)) break;
-                action?.Invoke(item);
-            }
-        }
-
-        /// <summary>
-        /// Iterate across the collection applying the defined condition without passing the current collection index
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collection"></param>
-        /// <param name="condition">Condition that will be applied during the iteration. Func&lt;<typeparamref name="T"/>, bool output&gt;</param>
-        /// <param name="action">Action to be executed for each collection item</param>
-        public static void For<T>(this IEnumerable<T> collection, Func<T, bool> condition, Action<T> action)
-        {
-            foreach (var item in collection)
-            {
-                if (!condition(item)) break;
-                action?.Invoke(item);
-            }
-        }
-
-        /// <summary>
-        /// Iterate across the collection and stops when the action returns false
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collection">Iterable collection</param>
-        /// <param name="action">Action to be executed for each collection item</param>
-        public static void For<T>(this IEnumerable<T> collection, Func<T, bool> action)
-        {
-            foreach (var item in collection)
-            {
-                if (!action(item)) return;
-            }
-        }
-
+    /// <summary>Executes each callback and stops after the first callback returning false.</summary>
+    public static void For<T>(this IEnumerable<T> collection, Func<T, bool> action)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+        ArgumentNullException.ThrowIfNull(action);
+        foreach (var item in collection)
+            if (!action(item)) break;
     }
 }

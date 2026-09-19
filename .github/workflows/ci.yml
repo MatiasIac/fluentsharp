@@ -55,6 +55,19 @@ jobs:
           -p:ContinuousIntegrationBuild=true
           --output artifacts/packages
 
+      - name: Verify version 2 API baseline
+        run: dotnet run --project tools/ApiSnapshot/ApiSnapshot.csproj --configuration Release -- --verify docs/PUBLIC-API.txt
+
+      - name: Build and run packaged consumer examples
+        shell: pwsh
+        run: |
+          [xml] $project = Get-Content FunctionalSharp/FunctionalSharp.csproj -Raw
+          $version = [string] $project.Project.PropertyGroup.Version
+          dotnet restore examples/Version2Consumer/Version2Consumer.csproj -p:FluentSharpVersion=$version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet run --project examples/Version2Consumer/Version2Consumer.csproj --configuration Release --no-restore -p:FluentSharpVersion=$version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
       - name: Upload test results and coverage
         if: always()
         uses: actions/upload-artifact@v7

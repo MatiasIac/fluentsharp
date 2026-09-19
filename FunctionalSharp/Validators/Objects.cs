@@ -1,17 +1,25 @@
-﻿using FunctionalSharp.Operations;
+using FunctionalSharp.Operations;
 
-namespace FunctionalSharp.Validators
+namespace FunctionalSharp.Validators;
+
+/// <summary>Captures null checks without losing the value's type.</summary>
+public static class Objects
 {
-    /// <summary>Creates conditional operation chains from null checks.</summary>
-    public static class Objects
+    extension<T>(T? value) where T : class
     {
-        /// <summary>
-        /// Enables following execution expressions if the 
-        /// current object is Null
-        /// </summary>
-        /// <param name="obj">Nullable object</param>
-        /// <returns>Set of valid operations</returns>
-        public static Operations.Operations IfNull(this object obj)
-            => OperationsFactory.GetOperations(obj == null);
+        /// <summary>Enables actions when the reference is null.</summary>
+        public Condition IfNull => new(value is null);
+
+        /// <summary>Passes the captured non-null reference to typed callbacks.</summary>
+        public ValueCondition<T> IfNotNull => new(value!, value is not null);
+    }
+
+    extension<T>(T? value) where T : struct
+    {
+        /// <summary>Enables actions when the nullable value has no value.</summary>
+        public Condition IfNull => new(!value.HasValue);
+
+        /// <summary>Passes the underlying value to typed callbacks when present.</summary>
+        public ValueCondition<T> IfNotNull => new(value.GetValueOrDefault(), value.HasValue);
     }
 }

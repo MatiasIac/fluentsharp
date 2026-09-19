@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <Authors>Matías Iacono</Authors>
     <Product>Fluent Sharp</Product>
     <Copyright>Matías Iacono</Copyright>
     <RepositoryUrl>https://github.com/MatiasIac/fluentsharp</RepositoryUrl>
-    <Description>Lightweight fluent extensions for C#: conditional operations, collection pipelines, LINQ equality comparers, data reader mapping, and chains of responsibility. Targets .NET Standard 2.0.</Description>
+    <Description>Fluent C# 14 conditions, value composition, awaited collection operations, equality comparers, data mapping, pipelines, and lightweight patterns for .NET 10.</Description>
     <PackageId>FluentSharp</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.7</Version>
+    <Version>2.0.0</Version>
     <PackageProjectUrl>https://github.com/MatiasIac/fluentsharp</PackageProjectUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageReadmeFile>readme.md</PackageReadmeFile>

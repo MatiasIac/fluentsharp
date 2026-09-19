@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
 namespace FunctionalSharp.Validators.Tests
@@ -10,16 +10,16 @@ namespace FunctionalSharp.Validators.Tests
         public void When_IfNull_Evaluates_False_Expects_Exception()
         {
             Assert.Throws<Exception>(() => default(object)
-                .IfNull()
-                .Throw(new Exception("message")));
+                .IfNull
+                .Throw(() => new Exception("message")));
         }
 
         [TestMethod()]
         public void When_IfNull_Evaluates_FalseWithCustomException_Expects_CustomException()
         {
             Assert.Throws<Exception>(() => default(object)
-                .IfNull()
-                .Throw(new CustomException("Custom message")));
+                .IfNull
+                .Throw(() => new CustomException("Custom message")));
         }
 
         private class CustomException(string message) : Exception(message)

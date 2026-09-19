@@ -1,8 +1,9 @@
-﻿using FunctionalSharp.Decorators;
-using FunctionalSharp.Validators;
+using FunctionalSharp.Decorators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FunctionalSharp.Patterns
 {
@@ -21,7 +22,7 @@ namespace FunctionalSharp.Patterns
     public sealed class DataCargo<T>
     {
         /// <summary>The payload shared by all links.</summary>
-        public T Payload;
+        public T Payload = default!;
         /// <summary>Gets or sets whether the chain should stop after the current link.</summary>
         public bool Cancel { get; set; }
     }
@@ -29,22 +30,26 @@ namespace FunctionalSharp.Patterns
     /// <summary>Configures how a chain handles failures and repeated attempts.</summary>
     public sealed class Configuration
     {
-        /// <summary>Gets whether a link failure stops the chain without retrying.</summary>
+        /// <summary>Gets whether an exhausted link failure stops the chain instead of continuing.</summary>
         public bool StopOnFailure { get; }
-        /// <summary>Gets the total attempt limit when retries are enabled.</summary>
-        /// <remarks>Retries require StopOnFailure to be false. Zero stops the chain on a failure.</remarks>
-        public int RepeatTimesOnFailure { get; }
+        /// <summary>Gets the maximum attempts per link, including the initial attempt.</summary>
+        /// <remarks>One means no retries. Attempts are allowed regardless of StopOnFailure.</remarks>
+        public int MaxAttempts { get; }
 
         /// <summary>Creates a chain's failure-handling configuration.</summary>
-        /// <param name="stopOnFailure">Whether to stop immediately when a link fails.</param>
-        /// <param name="repeatTimesOnFailure">The total attempt limit when not stopping on failure.</param>
+        /// <param name="stopOnFailure">Whether to stop after a link exhausts its allowed attempts.</param>
+        /// <param name="maxAttempts">The total attempt limit per link, including the initial attempt. Must be at least one.</param>
+        /// <exception cref="ArgumentOutOfRangeException">maxAttempts is less than one.</exception>
         public Configuration(
             bool stopOnFailure = true,
-            int repeatTimesOnFailure = 0
+            int maxAttempts = 1
         )
         {
+            if (maxAttempts < 1)
+                throw new ArgumentOutOfRangeException(nameof(maxAttempts), maxAttempts, "At least one attempt is required.");
+
             StopOnFailure = stopOnFailure;
-            RepeatTimesOnFailure = repeatTimesOnFailure;
+            MaxAttempts = maxAttempts;
         }
     }
 
@@ -67,11 +72,11 @@ namespace FunctionalSharp.Patterns
         private readonly DataCargo<T> _dataCargo;
         private readonly Configuration _configuration;
         private readonly List<LinkBase<T>> _chain;
-        private Action<T> _completeAction;
-        private Action<T, Exception> _errorAction;
-        private Dictionary<string, LinkBase<T>> _decoratedLinkDictionary;
+        private Action<T>? _completeAction;
+        private Action<T, Exception>? _errorAction;
+        private Dictionary<string, Type>? _decoratedLinkDictionary;
 
-        internal GenericChain(T payload, Configuration configuration)
+        internal GenericChain(T? payload, Configuration? configuration)
         {
             _dataCargo = new DataCargo<T>
             {
@@ -91,15 +96,19 @@ namespace FunctionalSharp.Patterns
 
         /// <summary>Creates a chain with a supplied payload and optional configuration.</summary>
         /// <remarks>A null reference payload is constructed if its type has a public parameterless constructor.</remarks>
-        public static GenericChain<T> Create(T payload, Configuration configuration = null) => new GenericChain<T>(payload, configuration);
+        public static GenericChain<T> Create(T? payload, Configuration? configuration = null) => new GenericChain<T>(payload, configuration);
 
         /// <summary>Appends an action to the chain and returns this chain.</summary>
-        public GenericChain<T> AddLink(Action<DataCargo<T>> action) => AddLink(new Link(action));
+        public GenericChain<T> AddLink(Action<DataCargo<T>> action)
+        {
+            ArgumentNullException.ThrowIfNull(action);
+            return AddLink(new Link(action));
+        }
 
         /// <summary>Appends a custom link to the chain and returns this chain.</summary>
         public GenericChain<T> AddLink(LinkBase<T> link)
         {
-            link.IfNull().Throw(new Exception("Chain Link cannot be null"));
+            ArgumentNullException.ThrowIfNull(link);
 
             _chain.Add(link);
 
@@ -107,103 +116,129 @@ namespace FunctionalSharp.Patterns
         }
 
         /// <summary>Finds a named LinkAttribute-decorated link in loaded assemblies and appends it.</summary>
-        public GenericChain<T> AddDecoratedLink(string linkName) => AddLink(GetLinkByDecorationName(linkName));
+        /// <remarks>
+        /// Discovery includes only concrete, closed LinkBase&lt;T&gt; subclasses with a public
+        /// parameterless constructor. Names must be unique among eligible links for this payload type.
+        /// </remarks>
+        [RequiresUnreferencedCode("Decorated discovery scans loaded assemblies. Register a link explicitly with AddLink instead.")]
+        public GenericChain<T> AddDecoratedLink(string linkName)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(linkName);
+            return AddLink(GetLinkByDecorationName(linkName));
+        }
 
         #region Events
         /// <summary>Executes the links in order using the current payload.</summary>
-        /// <remarks>Cancellation or a stopping failure suppresses the completion callback.</remarks>
+        /// <remarks>
+        /// Each run resets the cancellation flag and uses the current payload. Cancellation or an
+        /// exhausted stopping failure suppresses the completion callback. OperationCanceledException
+        /// propagates immediately without retries or error callbacks. Other link exceptions are
+        /// reported to OnError and handled by the configuration. Callback exceptions propagate.
+        /// </remarks>
         public void Run()
         {
-            bool failed = false;
+            _dataCargo.Cancel = false;
 
             foreach (var link in _chain)
             {
-                if (failed = RunLinkAndStop(link)) break;
+                if (RunLinkAndStop(link)) return;
             }
 
-            if (!failed) _completeAction?.Invoke(_dataCargo.Payload);
+            _completeAction?.Invoke(_dataCargo.Payload);
         }
 
         /// <summary>
-        /// After the chain is fully executed, OnCompleted is called
+        /// Registers a callback called once when a run reaches the end of the chain.
         /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
+        /// <remarks>Continued link failures permit completion. Cancellation and stopping failures suppress it.</remarks>
+        /// <param name="action">The completion callback. Exceptions propagate to the caller of Run.</param>
+        /// <returns>This chain.</returns>
         public GenericChain<T> OnCompleted(Action<T> action)
         {
+            ArgumentNullException.ThrowIfNull(action);
             _completeAction = action;
             return this;
         }
 
         /// <summary>
-        /// When any link of the chain throws an exception OnError is called
+        /// Registers a callback called for each failed link attempt, except cancellation exceptions.
         /// </summary>
-        /// <param name="action"></param>
-        /// <returns>This chain</returns>
+        /// <param name="action">The error callback. Exceptions propagate without being retried or reported again.</param>
+        /// <returns>This chain.</returns>
         public GenericChain<T> OnError(Action<T, Exception> action)
         {
+            ArgumentNullException.ThrowIfNull(action);
             _errorAction = action;
             return this;
         }
         #endregion
 
         #region Privates
+        [RequiresUnreferencedCode("Scans loaded assemblies for decorated links.")]
         private LinkBase<T> GetLinkByDecorationName(string name)
         {
-            _decoratedLinkDictionary.IfNull()
-                .Then(() => CreateDecoratedLinkDictionary());
-
-            (_decoratedLinkDictionary.TryGetValue(name, out LinkBase<T> link))
-                .IfFalse()
-                .Throw(new Exception($"Decorated link {name} not found"));
-
-            return link;
+            if (_decoratedLinkDictionary is null) CreateDecoratedLinkDictionary();
+            if (!_decoratedLinkDictionary!.TryGetValue(name, out var type))
+                throw new KeyNotFoundException($"Decorated link {name} not found");
+            return (LinkBase<T>)Activator.CreateInstance(type)!;
         }
 
+        [RequiresUnreferencedCode("Scans loaded assemblies for decorated links.")]
         private void CreateDecoratedLinkDictionary()
         {
-            //TODO: potential bug or innecessary iteration
-            // if LinkBase<T>, concrete type differs from its T type
-            // will be included into the dictionary as null
-            // find a way to filter out null values from the main where
-            _decoratedLinkDictionary = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly =>
-                    assembly.GetTypes()
-                        .Where(type => 
-                            type.GetCustomAttributes(typeof(LinkAttribute), true).Count() > 0 
-                            //&& type.IsAssignableFrom(typeof(LinkBase<T>))
-                            ))
-                .ToDictionary(k => 
-                    (k.GetCustomAttributes(typeof(LinkAttribute), true)[0] as LinkAttribute).LinkName, 
-                    v => Activator.CreateInstance(v) as LinkBase<T>);
-        }
-
-        private bool RunLinkAndStop(LinkBase<T> link, int attempt = 0)
-        {
-            try
-            {
-                _dataCargo.Cancel = false;
-                link.OnExecute(_dataCargo);
-                return _dataCargo.Cancel;
-            }
-            catch (Exception ex)
-            {
-                _errorAction?.Invoke(_dataCargo.Payload, ex);
-
-                if (!_configuration.StopOnFailure && 
-                    _configuration.RepeatTimesOnFailure > 0 &&
-                    attempt < _configuration.RepeatTimesOnFailure - 1)
+            var candidates = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(GetLoadableTypes)
+                .Where(type => typeof(LinkBase<T>).IsAssignableFrom(type)
+                    && !type.IsAbstract
+                    && !type.ContainsGenericParameters
+                    && type.GetConstructor(Type.EmptyTypes) != null)
+                .Select(type => new
                 {
-                    return RunLinkAndStop(link, attempt + 1);
-                }
+                    Type = type,
+                    Decoration = type.GetCustomAttribute<LinkAttribute>(true)
+                })
+                .Where(candidate => candidate.Decoration != null)
+                .ToArray();
 
-                if (attempt == _configuration.RepeatTimesOnFailure) return true;
+            var duplicate = candidates.GroupBy(candidate => candidate.Decoration!.LinkName, StringComparer.Ordinal)
+                .FirstOrDefault(group => group.Count() > 1);
+            if (duplicate != null)
+                throw new InvalidOperationException($"Multiple links for '{typeof(T)}' use the name '{duplicate.Key}'. Register links explicitly with AddLink.");
 
-                return _configuration.StopOnFailure;
-            }
+            // Validate all names before constructing anything; instantiate only the requested link.
+            _decoratedLinkDictionary = candidates.ToDictionary(candidate => candidate.Decoration!.LinkName, candidate => candidate.Type, StringComparer.Ordinal);
         }
 
-        private T GetPayloadOrInstance(T payload)
+        [RequiresUnreferencedCode("Enumerates assembly types.")]
+        private static IEnumerable<Type> GetLoadableTypes(Assembly assembly)
+        {
+            try { return assembly.GetTypes(); }
+            catch (ReflectionTypeLoadException error) { return error.Types.OfType<Type>(); }
+        }
+
+        private bool RunLinkAndStop(LinkBase<T> link)
+        {
+            for (var attempt = 0; attempt < _configuration.MaxAttempts; attempt++)
+            {
+                try
+                {
+                    link.OnExecute(_dataCargo);
+                    return _dataCargo.Cancel;
+                }
+                catch (Exception ex) when (!(ex is OperationCanceledException))
+                {
+                    _errorAction?.Invoke(_dataCargo.Payload, ex);
+
+                    // A link can request cancellation before failing; cancellation takes
+                    // precedence over retrying or continuing to the next link.
+                    if (_dataCargo.Cancel) return true;
+                }
+            }
+
+            return _configuration.StopOnFailure;
+        }
+
+        private T GetPayloadOrInstance(T? payload)
         {
             if (payload != null) return payload;
 

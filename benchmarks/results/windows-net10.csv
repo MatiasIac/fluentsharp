@@ -1,0 +1,12 @@
+scenario,median_ns_per_op,median_bytes_per_op,checksum
+condition/ordinary-if,2.00,0.00,2251000500000
+condition/v2-struct,2.68,0.00,2251000500000
+collection/foreach,715.43,32.00,657920000
+collection/v2-ForEvery,1063.81,120.00,657920000
+comparer/LINQ-default,3683.65,8552.00,512000
+comparer/v2-constant-hash,168007.25,8584.00,512000
+comparer/v2-explicit-hash,5118.25,8584.00,512000
+comparer/v2-key,6821.85,8552.00,512000
+mapping/manual,10419.70,13416.00,4950000
+mapping/v2-reflection,21071.00,13845.22,4950000
+mapping/v2-explicit,10154.90,13416.00,4950000

@@ -1,26 +1,16 @@
-﻿using FunctionalSharp.Operations;
+using FunctionalSharp.Operations;
 
-namespace FunctionalSharp.Validators
+namespace FunctionalSharp.Validators;
+
+/// <summary>Captures boolean values as immutable conditions.</summary>
+public static class Booleans
 {
-    /// <summary>Creates conditional operation chains from boolean values.</summary>
-    public static class Booleans
+    extension(bool value)
     {
-        /// <summary>
-        /// Enables following execution expressions if the 
-        /// current evaluated expression is True
-        /// </summary>
-        /// <param name="expression">Boolean expression</param>
-        /// <returns>Set of valid operations</returns>
-        public static Operations.Operations IfTrue(this bool expression)
-            => OperationsFactory.GetOperations(expression);
+        /// <summary>Enables actions when the captured value is true.</summary>
+        public Condition IfTrue => new(value);
 
-        /// <summary>
-        /// Enables following execution expressions if the 
-        /// current evaluated expression is False
-        /// </summary>
-        /// <param name="expression">Boolean expression</param>
-        /// <returns>Set of valid operations</returns>
-        public static Operations.Operations IfFalse(this bool expression)
-            => OperationsFactory.GetOperations(!expression);
+        /// <summary>Enables actions when the captured value is false.</summary>
+        public Condition IfFalse => new(!value);
     }
 }

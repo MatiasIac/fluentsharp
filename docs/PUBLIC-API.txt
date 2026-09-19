@@ -1,0 +1,275 @@
+# FluentSharp 2 CLR API baseline (C# extension syntax and nullability also checked by the packaged consumer).
+type FunctionalSharp.Collections.AsyncIterators [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method System.Threading.Tasks.Task ForAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[T,System.Boolean], System.Func`2[T,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, condition, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[T,System.Boolean], System.Func`3[T,System.Threading.CancellationToken,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, condition, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[T,System.Threading.Tasks.Task`1[System.Boolean]], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,System.Int32,System.Boolean], System.Func`2[T,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, condition, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,System.Int32,System.Boolean], System.Func`3[T,System.Threading.CancellationToken,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, condition, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,System.Threading.CancellationToken,System.Threading.Tasks.Task`1[System.Boolean]], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForEveryAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[T,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task ForEveryAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,System.Threading.CancellationToken,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task`1[System.Collections.Generic.IEnumerable`1[T]] AlterAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[System.Collections.Generic.IEnumerable`1[T],System.Threading.Tasks.Task`1[System.Collections.Generic.IEnumerable`1[T]]], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task`1[System.Collections.Generic.IEnumerable`1[T]] AlterAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[System.Collections.Generic.IEnumerable`1[T],System.Threading.CancellationToken,System.Threading.Tasks.Task`1[System.Collections.Generic.IEnumerable`1[T]]], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task`1[System.Collections.Generic.IEnumerable`1[T]] ThenAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[System.Collections.Generic.IEnumerable`1[T],System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+  Method System.Threading.Tasks.Task`1[System.Collections.Generic.IEnumerable`1[T]] ThenAsync[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[System.Collections.Generic.IEnumerable`1[T],System.Threading.CancellationToken,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, Static, HideBySig] parameters(collection, action, cancellationToken = null)
+    generic T [None]
+type FunctionalSharp.Collections.Iterators [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method Void ForEvery[T](System.Collections.Generic.IEnumerable`1[T], System.Action`1[T]) [Public, Static, HideBySig] parameters(collection, action)
+    generic T [None]
+  Method Void For[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[T,System.Boolean]) [Public, Static, HideBySig] parameters(collection, action)
+    generic T [None]
+  Method Void For[T](System.Collections.Generic.IEnumerable`1[T], System.Func`2[T,System.Boolean], System.Action`1[T]) [Public, Static, HideBySig] parameters(collection, condition, action)
+    generic T [None]
+  Method Void For[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,System.Int32,System.Boolean], System.Action`1[T]) [Public, Static, HideBySig] parameters(collection, condition, action)
+    generic T [None]
+type FunctionalSharp.Composition.Values [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method T Tap[T](T, System.Action`1[T]) [Public, Static, HideBySig] parameters(value, action)
+    generic T [None]
+  Method TResult Pipe[T,TResult](T, System.Func`2[T,TResult]) [Public, Static, HideBySig] parameters(value, transform)
+    generic T [None]
+    generic TResult [None]
+type FunctionalSharp.Data.DataReaders [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method System.Collections.Generic.List`1[T] ToList[T](System.Data.Common.DbDataReader, Boolean) [Public, Static, HideBySig] parameters(reader, ignoreCase = False)
+    generic T [DefaultConstructorConstraint]
+  Method System.Collections.Generic.List`1[T] ToList[T](System.Data.Common.DbDataReader, System.Func`2[System.Data.Common.DbDataReader,T]) [Public, Static, HideBySig] parameters(reader, map)
+    generic T [None]
+  Method System.ValueTuple`2[System.Collections.Generic.List`1[T1],System.Collections.Generic.List`1[T2]] ToMany[T1,T2](System.Data.Common.DbDataReader, Boolean) [Public, Static, HideBySig] parameters(reader, ignoreCase = False)
+    generic T1 [DefaultConstructorConstraint]
+    generic T2 [DefaultConstructorConstraint]
+  Method System.ValueTuple`3[System.Collections.Generic.List`1[T1],System.Collections.Generic.List`1[T2],System.Collections.Generic.List`1[T3]] ToMany[T1,T2,T3](System.Data.Common.DbDataReader, Boolean) [Public, Static, HideBySig] parameters(reader, ignoreCase = False)
+    generic T1 [DefaultConstructorConstraint]
+    generic T2 [DefaultConstructorConstraint]
+    generic T3 [DefaultConstructorConstraint]
+  Method System.ValueTuple`4[System.Collections.Generic.List`1[T1],System.Collections.Generic.List`1[T2],System.Collections.Generic.List`1[T3],System.Collections.Generic.List`1[T4]] ToMany[T1,T2,T3,T4](System.Data.Common.DbDataReader, Boolean) [Public, Static, HideBySig] parameters(reader, ignoreCase = False)
+    generic T1 [DefaultConstructorConstraint]
+    generic T2 [DefaultConstructorConstraint]
+    generic T3 [DefaultConstructorConstraint]
+    generic T4 [DefaultConstructorConstraint]
+type FunctionalSharp.Decorators.LinkAttribute [Public, Sealed, BeforeFieldInit] : System.Attribute
+  Property System.String LinkName
+  Method System.String get_LinkName() [Public, HideBySig, SpecialName] parameters()
+  Constructor Void .ctor(System.String) [Public, HideBySig, SpecialName, RTSpecialName] parameters(linkName)
+  Method Void set_LinkName(System.String) [Public, HideBySig, SpecialName] parameters(value)
+type FunctionalSharp.Linq.KeyComparer [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method System.Collections.Generic.IEqualityComparer`1[T] By[T,TKey](System.Func`2[T,TKey], System.Collections.Generic.IEqualityComparer`1[TKey]) [Public, Static, HideBySig] parameters(keySelector, comparer = null)
+    generic T [None]
+    generic TKey [None]
+type FunctionalSharp.Linq.LinqExtenders [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method Boolean Contains[T](System.Collections.Generic.IEnumerable`1[T], T, System.Func`3[T,T,System.Boolean], System.Func`2[T,System.Int32]) [Public, Static, HideBySig] parameters(source, value, comparer, hashCodeComparer = null)
+    generic T [None]
+  Method System.Collections.Generic.Dictionary`2[TKey,TElement] ToDictionary[TSource,TKey,TElement](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`2[TSource,TElement], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, elementSelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+    generic TElement [None]
+  Method System.Collections.Generic.IEnumerable`1[System.Linq.IGrouping`2[TKey,TElement]] GroupBy[TSource,TKey,TElement](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`2[TSource,TElement], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, elementSelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+    generic TElement [None]
+  Method System.Collections.Generic.IEnumerable`1[System.Linq.IGrouping`2[TKey,TSource]] GroupBy[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+  Method System.Collections.Generic.IEnumerable`1[TResult] GroupBy[TSource,TKey,TElement,TResult](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`2[TSource,TElement], System.Func`3[TKey,System.Collections.Generic.IEnumerable`1[TElement],TResult], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, elementSelector, resultSelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+    generic TElement [None]
+    generic TResult [None]
+  Method System.Collections.Generic.IEnumerable`1[TResult] GroupBy[TSource,TKey,TResult](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`3[TKey,System.Collections.Generic.IEnumerable`1[TSource],TResult], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, resultSelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+    generic TResult [None]
+  Method System.Collections.Generic.IEnumerable`1[TResult] GroupJoin[TOuter,TInner,TKey,TResult](System.Collections.Generic.IEnumerable`1[TOuter], System.Collections.Generic.IEnumerable`1[TInner], System.Func`2[TOuter,TKey], System.Func`2[TInner,TKey], System.Func`3[TOuter,System.Collections.Generic.IEnumerable`1[TInner],TResult], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer, hashCodeComparer = null)
+    generic TOuter [None]
+    generic TInner [None]
+    generic TKey [None]
+    generic TResult [None]
+  Method System.Collections.Generic.IEnumerable`1[TResult] Join[TOuter,TInner,TKey,TResult](System.Collections.Generic.IEnumerable`1[TOuter], System.Collections.Generic.IEnumerable`1[TInner], System.Func`2[TOuter,TKey], System.Func`2[TInner,TKey], System.Func`3[TOuter,TInner,TResult], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(outer, inner, outerKeySelector, innerKeySelector, resultSelector, comparer, hashCodeComparer = null)
+    generic TOuter [None]
+    generic TInner [None]
+    generic TKey [None]
+    generic TResult [None]
+  Method System.Collections.Generic.IEnumerable`1[TSource] Union[TSource](System.Collections.Generic.IEnumerable`1[TSource], System.Collections.Generic.IEnumerable`1[TSource], System.Func`3[TSource,TSource,System.Boolean], System.Func`2[TSource,System.Int32]) [Public, Static, HideBySig] parameters(first, second, comparer, hashCodeComparer = null)
+    generic TSource [None]
+  Method System.Collections.Generic.IEnumerable`1[T] Distinct[T](System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,T,System.Boolean], System.Func`2[T,System.Int32]) [Public, Static, HideBySig] parameters(source, comparer, hashCodeComparer = null)
+    generic T [None]
+  Method System.Collections.Generic.IEnumerable`1[T] Except[T](System.Collections.Generic.IEnumerable`1[T], System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,T,System.Boolean], System.Func`2[T,System.Int32]) [Public, Static, HideBySig] parameters(source, second, comparer, hashCodeComparer = null)
+    generic T [None]
+  Method System.Collections.Generic.IEnumerable`1[T] Intersect[T](System.Collections.Generic.IEnumerable`1[T], System.Collections.Generic.IEnumerable`1[T], System.Func`3[T,T,System.Boolean], System.Func`2[T,System.Int32]) [Public, Static, HideBySig] parameters(source, second, comparer, hashCodeComparer = null)
+    generic T [None]
+  Method System.Linq.ILookup`2[TKey,TElement] ToLookup[TSource,TKey,TElement](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`2[TSource,TElement], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, elementSelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+    generic TElement [None]
+  Method System.Linq.ILookup`2[TKey,TSource] ToLookup[TSource,TKey](System.Collections.Generic.IEnumerable`1[TSource], System.Func`2[TSource,TKey], System.Func`3[TKey,TKey,System.Boolean], System.Func`2[TKey,System.Int32]) [Public, Static, HideBySig] parameters(source, keySelector, comparer, hashCodeComparer = null)
+    generic TSource [None]
+    generic TKey [None]
+type FunctionalSharp.Operations.Condition [Public, SequentialLayout, Sealed, BeforeFieldInit] : System.ValueType
+  Property Boolean IsMatched
+  Method Boolean get_IsMatched() [Public, HideBySig, SpecialName] parameters()
+  Method FunctionalSharp.Operations.Condition Then(System.Action) [Public, HideBySig] parameters(action)
+  Method TResult Match[TResult](System.Func`1[TResult], System.Func`1[TResult]) [Public, HideBySig] parameters(whenTrue, whenFalse)
+    generic TResult [None]
+  Constructor Void .ctor(Boolean) [Public, HideBySig, SpecialName, RTSpecialName] parameters(isMatched)
+  Method Void Throw[TException]() [Public, HideBySig] parameters()
+    generic TException [DefaultConstructorConstraint] System.Exception
+  Method Void Throw[TException](System.Func`1[TException]) [Public, HideBySig] parameters(exceptionFactory)
+    generic TException [None] System.Exception
+type FunctionalSharp.Operations.ValueCondition`1 [Public, SequentialLayout, Sealed, BeforeFieldInit] : System.ValueType
+    generic T [None]
+  Property Boolean IsMatched
+  Method Boolean get_IsMatched() [Public, HideBySig, SpecialName] parameters()
+  Method FunctionalSharp.Operations.ValueCondition`1[T] Then(System.Action`1[T]) [Public, HideBySig] parameters(action)
+  Method TResult Match[TResult](System.Func`2[T,TResult], System.Func`1[TResult]) [Public, HideBySig] parameters(whenNotNull, whenNull)
+    generic TResult [None]
+  Method Void Throw[TException](System.Func`2[T,TException]) [Public, HideBySig] parameters(exceptionFactory)
+    generic TException [None] System.Exception
+type FunctionalSharp.Patterns.AsyncChainOfResponsibility`2 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic TRequest [None]
+    generic TResponse [None]
+  Method FunctionalSharp.Patterns.AsyncChainOfResponsibility`2[TRequest,TResponse] Create() [Public, Static, HideBySig] parameters()
+  Method FunctionalSharp.Patterns.AsyncChainOfResponsibility`2[TRequest,TResponse] Otherwise(System.Func`2[TRequest,System.Threading.Tasks.Task`1[TResponse]]) [Public, HideBySig] parameters(handler)
+  Method FunctionalSharp.Patterns.AsyncChainOfResponsibility`2[TRequest,TResponse] Otherwise(System.Func`3[TRequest,System.Threading.CancellationToken,System.Threading.Tasks.Task`1[TResponse]]) [Public, HideBySig] parameters(handler)
+  Method FunctionalSharp.Patterns.AsyncChainOfResponsibility`2[TRequest,TResponse] When(System.Func`2[TRequest,System.Boolean], System.Func`2[TRequest,System.Threading.Tasks.Task`1[TResponse]]) [Public, HideBySig] parameters(predicate, handler)
+  Method FunctionalSharp.Patterns.AsyncChainOfResponsibility`2[TRequest,TResponse] When(System.Func`2[TRequest,System.Boolean], System.Func`3[TRequest,System.Threading.CancellationToken,System.Threading.Tasks.Task`1[TResponse]]) [Public, HideBySig] parameters(predicate, handler)
+  Method FunctionalSharp.Patterns.AsyncChainOfResponsibility`2[TRequest,TResponse] When(System.Func`3[TRequest,System.Threading.CancellationToken,System.Threading.Tasks.Task`1[System.Boolean]], System.Func`3[TRequest,System.Threading.CancellationToken,System.Threading.Tasks.Task`1[TResponse]]) [Public, HideBySig] parameters(predicate, handler)
+  Method System.Threading.Tasks.Task`1[FunctionalSharp.Patterns.HandlingResult`1[TResponse]] HandleAsync(TRequest, System.Threading.CancellationToken) [Public, HideBySig] parameters(request, cancellationToken = null)
+type FunctionalSharp.Patterns.AsyncPipeline`1 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic T [None]
+  Method FunctionalSharp.Patterns.AsyncPipeline`1[T] Create() [Public, Static, HideBySig] parameters()
+  Method FunctionalSharp.Patterns.AsyncPipeline`1[T] OnCompleted(System.Func`2[T,System.Threading.Tasks.Task]) [Public, HideBySig] parameters(action)
+  Method FunctionalSharp.Patterns.AsyncPipeline`1[T] OnError(System.Func`3[T,System.Exception,System.Threading.Tasks.Task]) [Public, HideBySig] parameters(action)
+  Method FunctionalSharp.Patterns.AsyncPipeline`1[T] StopWhen(System.Func`2[T,System.Boolean]) [Public, HideBySig] parameters(condition)
+  Method FunctionalSharp.Patterns.AsyncPipeline`1[T] Then(System.Func`2[T,System.Threading.Tasks.Task`1[T]], FunctionalSharp.Patterns.RetryPolicy) [Public, HideBySig] parameters(step, retry = null)
+  Method FunctionalSharp.Patterns.AsyncPipeline`1[T] Then(System.Func`3[T,System.Threading.CancellationToken,System.Threading.Tasks.Task`1[T]], FunctionalSharp.Patterns.RetryPolicy) [Public, HideBySig] parameters(step, retry = null)
+  Method System.Threading.Tasks.Task`1[FunctionalSharp.Patterns.ExecutionResult`1[T]] RunAsync(T, System.Threading.CancellationToken) [Public, HideBySig] parameters(payload, cancellationToken = null)
+type FunctionalSharp.Patterns.ChainOfResponsibility`2 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic TRequest [None]
+    generic TResponse [None]
+  Method FunctionalSharp.Patterns.ChainOfResponsibility`2[TRequest,TResponse] Create() [Public, Static, HideBySig] parameters()
+  Method FunctionalSharp.Patterns.ChainOfResponsibility`2[TRequest,TResponse] Otherwise(System.Func`2[TRequest,TResponse]) [Public, HideBySig] parameters(handler)
+  Method FunctionalSharp.Patterns.ChainOfResponsibility`2[TRequest,TResponse] Otherwise(System.Func`3[TRequest,System.Threading.CancellationToken,TResponse]) [Public, HideBySig] parameters(handler)
+  Method FunctionalSharp.Patterns.ChainOfResponsibility`2[TRequest,TResponse] When(System.Func`2[TRequest,System.Boolean], System.Func`2[TRequest,TResponse]) [Public, HideBySig] parameters(predicate, handler)
+  Method FunctionalSharp.Patterns.ChainOfResponsibility`2[TRequest,TResponse] When(System.Func`2[TRequest,System.Boolean], System.Func`3[TRequest,System.Threading.CancellationToken,TResponse]) [Public, HideBySig] parameters(predicate, handler)
+  Method FunctionalSharp.Patterns.HandlingResult`1[TResponse] Handle(TRequest, System.Threading.CancellationToken) [Public, HideBySig] parameters(request, cancellationToken = null)
+type FunctionalSharp.Patterns.Configuration [Public, Sealed, BeforeFieldInit] : System.Object
+  Property Boolean StopOnFailure
+  Method Boolean get_StopOnFailure() [Public, HideBySig, SpecialName] parameters()
+  Property Int32 MaxAttempts
+  Method Int32 get_MaxAttempts() [Public, HideBySig, SpecialName] parameters()
+  Constructor Void .ctor(Boolean, Int32) [Public, HideBySig, SpecialName, RTSpecialName] parameters(stopOnFailure = True, maxAttempts = 1)
+type FunctionalSharp.Patterns.DataCargo`1 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic T [None]
+  Property Boolean Cancel
+  Method Boolean get_Cancel() [Public, HideBySig, SpecialName] parameters()
+  Field T Payload [Public]
+  Constructor Void .ctor() [Public, HideBySig, SpecialName, RTSpecialName] parameters()
+  Method Void set_Cancel(Boolean) [Public, HideBySig, SpecialName] parameters(value)
+type FunctionalSharp.Patterns.ExecutionResult`1 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic T [None]
+  Property FunctionalSharp.Patterns.ExecutionStatus Status
+  Method FunctionalSharp.Patterns.ExecutionStatus get_Status() [Public, HideBySig, SpecialName] parameters()
+  Property System.Exception Error
+  Method System.Exception get_Error() [Public, HideBySig, SpecialName] parameters()
+  Property System.Nullable`1[System.Int32] StepIndex
+  Method System.Nullable`1[System.Int32] get_StepIndex() [Public, HideBySig, SpecialName] parameters()
+  Property T Payload
+  Method T get_Payload() [Public, HideBySig, SpecialName] parameters()
+type FunctionalSharp.Patterns.ExecutionStatus [Public, Sealed] : System.Enum
+  implements System.IComparable
+  implements System.IConvertible
+  implements System.IFormattable
+  implements System.ISpanFormattable
+  Field FunctionalSharp.Patterns.ExecutionStatus Cancelled [Public, Static, Literal, HasDefault] = 2
+  Field FunctionalSharp.Patterns.ExecutionStatus Completed [Public, Static, Literal, HasDefault] = 0
+  Field FunctionalSharp.Patterns.ExecutionStatus Failed [Public, Static, Literal, HasDefault] = 3
+  Field FunctionalSharp.Patterns.ExecutionStatus Stopped [Public, Static, Literal, HasDefault] = 1
+  Field Int32 value__ [Public, SpecialName, RTSpecialName]
+type FunctionalSharp.Patterns.Factory [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method FunctionalSharp.Patterns.FactoryBuilder`2[TKey,TValue] For[TKey,TValue](System.Collections.Generic.IEqualityComparer`1[TKey]) [Public, Static, HideBySig] parameters(comparer = null)
+    generic TKey [None]
+    generic TValue [None]
+type FunctionalSharp.Patterns.FactoryBuilder`2 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic TKey [None]
+    generic TValue [None]
+  Method FunctionalSharp.Patterns.FactoryBuilder`2[TKey,TValue] Register(TKey, System.Func`1[TValue]) [Public, HideBySig] parameters(key, constructor)
+  Method FunctionalSharp.Patterns.Factory`2[TKey,TValue] Build() [Public, HideBySig] parameters()
+type FunctionalSharp.Patterns.Factory`2 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic TKey [None]
+    generic TValue [None]
+  Method Boolean TryCreate(TKey, TValue ByRef) [Public, HideBySig] parameters(key, value)
+  Method TValue Create(TKey) [Public, HideBySig] parameters(key)
+type FunctionalSharp.Patterns.GenericChain`1 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic T [None]
+  Method FunctionalSharp.Patterns.GenericChain`1[T] AddDecoratedLink(System.String) [Public, HideBySig] parameters(linkName)
+  Method FunctionalSharp.Patterns.GenericChain`1[T] AddLink(FunctionalSharp.Patterns.LinkBase`1[T]) [Public, HideBySig] parameters(link)
+  Method FunctionalSharp.Patterns.GenericChain`1[T] AddLink(System.Action`1[FunctionalSharp.Patterns.DataCargo`1[T]]) [Public, HideBySig] parameters(action)
+  Method FunctionalSharp.Patterns.GenericChain`1[T] Create() [Public, Static, HideBySig] parameters()
+  Method FunctionalSharp.Patterns.GenericChain`1[T] Create(FunctionalSharp.Patterns.Configuration) [Public, Static, HideBySig] parameters(configuration)
+  Method FunctionalSharp.Patterns.GenericChain`1[T] Create(T, FunctionalSharp.Patterns.Configuration) [Public, Static, HideBySig] parameters(payload, configuration = null)
+  Method FunctionalSharp.Patterns.GenericChain`1[T] OnCompleted(System.Action`1[T]) [Public, HideBySig] parameters(action)
+  Method FunctionalSharp.Patterns.GenericChain`1[T] OnError(System.Action`2[T,System.Exception]) [Public, HideBySig] parameters(action)
+  Method Void Run() [Public, HideBySig] parameters()
+type FunctionalSharp.Patterns.HandlingResult`1 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic T [None]
+  Property FunctionalSharp.Patterns.HandlingStatus Status
+  Method FunctionalSharp.Patterns.HandlingStatus get_Status() [Public, HideBySig, SpecialName] parameters()
+  Property System.Exception Error
+  Method System.Exception get_Error() [Public, HideBySig, SpecialName] parameters()
+  Property System.Nullable`1[System.Int32] HandlerIndex
+  Method System.Nullable`1[System.Int32] get_HandlerIndex() [Public, HideBySig, SpecialName] parameters()
+  Property T Value
+  Method T get_Value() [Public, HideBySig, SpecialName] parameters()
+type FunctionalSharp.Patterns.HandlingStatus [Public, Sealed] : System.Enum
+  implements System.IComparable
+  implements System.IConvertible
+  implements System.IFormattable
+  implements System.ISpanFormattable
+  Field FunctionalSharp.Patterns.HandlingStatus Cancelled [Public, Static, Literal, HasDefault] = 2
+  Field FunctionalSharp.Patterns.HandlingStatus Failed [Public, Static, Literal, HasDefault] = 3
+  Field FunctionalSharp.Patterns.HandlingStatus Handled [Public, Static, Literal, HasDefault] = 0
+  Field FunctionalSharp.Patterns.HandlingStatus Unhandled [Public, Static, Literal, HasDefault] = 1
+  Field Int32 value__ [Public, SpecialName, RTSpecialName]
+type FunctionalSharp.Patterns.LinkBase`1 [Public, Abstract, BeforeFieldInit] : System.Object
+    generic T [None]
+  Method Void OnExecute(FunctionalSharp.Patterns.DataCargo`1[T]) [Public, Virtual, HideBySig, VtableLayoutMask, Abstract] parameters(data)
+type FunctionalSharp.Patterns.Pipeline`1 [Public, Sealed, BeforeFieldInit] : System.Object
+    generic T [None]
+  Method FunctionalSharp.Patterns.ExecutionResult`1[T] Run(T, System.Threading.CancellationToken) [Public, HideBySig] parameters(payload, cancellationToken = null)
+  Method FunctionalSharp.Patterns.Pipeline`1[T] Create() [Public, Static, HideBySig] parameters()
+  Method FunctionalSharp.Patterns.Pipeline`1[T] OnCompleted(System.Action`1[T]) [Public, HideBySig] parameters(action)
+  Method FunctionalSharp.Patterns.Pipeline`1[T] OnError(System.Action`2[T,System.Exception]) [Public, HideBySig] parameters(action)
+  Method FunctionalSharp.Patterns.Pipeline`1[T] StopWhen(System.Func`2[T,System.Boolean]) [Public, HideBySig] parameters(condition)
+  Method FunctionalSharp.Patterns.Pipeline`1[T] Then(System.Func`2[T,T], FunctionalSharp.Patterns.RetryPolicy) [Public, HideBySig] parameters(step, retry = null)
+  Method FunctionalSharp.Patterns.Pipeline`1[T] Then(System.Func`3[T,System.Threading.CancellationToken,T], FunctionalSharp.Patterns.RetryPolicy) [Public, HideBySig] parameters(step, retry = null)
+type FunctionalSharp.Patterns.RetryPolicy [Public, Sealed, BeforeFieldInit] : System.Object
+  Property Int32 MaxAttempts
+  Method Int32 get_MaxAttempts() [Public, HideBySig, SpecialName] parameters()
+  Method System.Threading.Tasks.Task ExecuteAsync(System.Func`2[System.Threading.CancellationToken,System.Threading.Tasks.Task], System.Threading.CancellationToken) [Public, HideBySig] parameters(operation, cancellationToken = null)
+  Method System.Threading.Tasks.Task`1[T] ExecuteAsync[T](System.Func`2[System.Threading.CancellationToken,System.Threading.Tasks.Task`1[T]], System.Threading.CancellationToken) [Public, HideBySig] parameters(operation, cancellationToken = null)
+    generic T [None]
+  Method T Execute[T](System.Func`1[T], System.Threading.CancellationToken) [Public, HideBySig] parameters(operation, cancellationToken = null)
+    generic T [None]
+  Constructor Void .ctor(Int32, System.Func`2[System.Exception,System.Boolean]) [Public, HideBySig, SpecialName, RTSpecialName] parameters(maxAttempts, shouldRetry)
+  Method Void Execute(System.Action, System.Threading.CancellationToken) [Public, HideBySig] parameters(operation, cancellationToken = null)
+type FunctionalSharp.Validators.Booleans [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method FunctionalSharp.Operations.Condition get_IfFalse(Boolean) [Public, Static, HideBySig] parameters(value)
+  Method FunctionalSharp.Operations.Condition get_IfTrue(Boolean) [Public, Static, HideBySig] parameters(value)
+type FunctionalSharp.Validators.Objects [Public, Abstract, Sealed, BeforeFieldInit] : System.Object
+  Method FunctionalSharp.Operations.Condition get_IfNull[T](System.Nullable`1[T]) [Public, Static, HideBySig] parameters(value)
+    generic T [NotNullableValueTypeConstraint, DefaultConstructorConstraint] System.ValueType
+  Method FunctionalSharp.Operations.Condition get_IfNull[T](T) [Public, Static, HideBySig] parameters(value)
+    generic T [ReferenceTypeConstraint]
+  Method FunctionalSharp.Operations.ValueCondition`1[T] get_IfNotNull[T](System.Nullable`1[T]) [Public, Static, HideBySig] parameters(value)
+    generic T [NotNullableValueTypeConstraint, DefaultConstructorConstraint] System.ValueType
+  Method FunctionalSharp.Operations.ValueCondition`1[T] get_IfNotNull[T](T) [Public, Static, HideBySig] parameters(value)
+    generic T [ReferenceTypeConstraint]
