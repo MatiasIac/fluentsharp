@@ -69,10 +69,9 @@ namespace FunctionalSharp.Patterns.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(ArgumentException))]
         public void When_Chain_IsCreatedWithAbstract_ExpectException()
         {
-            GenericChain<AbstractType>.Create();
+            Assert.Throws<ArgumentException>(() => GenericChain<AbstractType>.Create());
         }
 
         [TestMethod()]
@@ -124,24 +123,25 @@ namespace FunctionalSharp.Patterns.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(Exception))]
         public void When_Chain_Fail_ExpectError()
         {
             var chain = GenericChain<int>.Create(0, new Configuration(stopOnFailure: true));
 
-            chain
-                .AddLink(data => data.Payload = 10)
-                .AddLink(data => {
-                    data.Payload += 1;
-                    throw new Exception("Chain exception");
-                })
-                .OnError((data, ex) => 
-                {
-                    Assert.AreEqual(11, data);
-                    Assert.AreEqual("Chain exception", ex.Message);
-                    throw ex;
-                })
-                .Run();
+            Assert.Throws<Exception>(() =>
+                chain
+                    .AddLink(data => data.Payload = 10)
+                    .AddLink(data => {
+                        data.Payload += 1;
+                        throw new Exception("Chain exception");
+                    })
+                    .OnError((data, ex) => 
+                    {
+                        Assert.AreEqual(11, data);
+                        Assert.AreEqual("Chain exception", ex.Message);
+                        throw ex;
+                    })
+                    .Run()
+            );
         }
 
         [TestMethod()]
@@ -155,7 +155,7 @@ namespace FunctionalSharp.Patterns.Tests
                 .OnCompleted(data => Assert.Fail())
                 .Run();
 
-            Assert.IsTrue(true);
+            //Assert.IsTrue(true);
         }
 
         [Link("MyCustomLink")]

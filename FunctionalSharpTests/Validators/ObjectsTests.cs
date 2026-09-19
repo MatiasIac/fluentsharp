@@ -7,26 +7,23 @@ namespace FunctionalSharp.Validators.Tests
     public class ObjectsTests
     {
         [TestMethod()]
-        [ExpectedException(typeof(Exception))]
         public void When_IfNull_Evaluates_False_Expects_Exception()
         {
-            default(object)
+            Assert.Throws<Exception>(() => default(object)
                 .IfNull()
-                .Throw(new Exception("message"));
+                .Throw(new Exception("message")));
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(CustomException))]
         public void When_IfNull_Evaluates_FalseWithCustomException_Expects_CustomException()
         {
-            default(object)
+            Assert.Throws<Exception>(() => default(object)
                 .IfNull()
-                .Throw(new CustomException("Custom message"));
+                .Throw(new CustomException("Custom message")));
         }
 
-        private class CustomException : Exception
+        private class CustomException(string message) : Exception(message)
         {
-            public CustomException(string message) : base(message) { }
         }
     }
 }

@@ -8,12 +8,11 @@ namespace FunctionalSharp.Tests
     public class BooleansTests
     {
         [TestMethod()]
-        [ExpectedException(typeof(Exception))]
         public void When_IfTrue_Evaluates_True_Expects_Exception()
         {
-            true
+            Assert.Throws<Exception>(() => true
                 .IfTrue()
-                .Throw(new Exception("message"));
+                .Throw(new Exception("message")));
         }
 
         [TestMethod()]
@@ -22,26 +21,22 @@ namespace FunctionalSharp.Tests
             false
                 .IfTrue()
                 .Throw(new Exception("message"));
-
-            Assert.IsTrue(true);
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(CustomException))]
         public void When_IfTrue_Evaluates_TrueWithCustomException_Expects_CustomException()
         {
-            true
+            Assert.Throws<CustomException>(() => true
                 .IfTrue()
-                .Throw(new CustomException("Custom message"));
+                .Throw(new CustomException("Custom message")));
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(Exception))]
         public void When_IfFalse_Evaluates_False_Expects_Exception()
         {
-            false
+            Assert.Throws<Exception>(() => false
                 .IfFalse()
-                .Throw(new Exception("message"));
+                .Throw(new Exception("message")));
         }
 
         [TestMethod()]
@@ -50,22 +45,18 @@ namespace FunctionalSharp.Tests
             true
                 .IfFalse()
                 .Throw(new Exception("message"));
-
-            Assert.IsTrue(true);
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(CustomException))]
         public void When_IfFalse_Evaluates_FalseWithCustomException_Expects_CustomException()
         {
-            false
+            Assert.Throws<CustomException>(() => false
                 .IfFalse()
-                .Throw(new CustomException("Custom message"));
+                .Throw(new CustomException("Custom message")));
         }
 
-        private class CustomException : Exception
+        private class CustomException(string message) : Exception(message)
         {
-            public CustomException(string message) : base(message) { }
         }
     }
 }
